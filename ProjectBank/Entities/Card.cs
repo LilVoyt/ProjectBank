@@ -12,7 +12,7 @@ namespace ProjectBank.Entities
         public int Pincode { get; set; }
         public DateTime Data { get; set; }
         public int CVV { get; set; }
-        public SqlMoney Balance { get; set; }
+        public double Balance { get; set; }
         public Guid AccLink { get; set; }
     }
 }

@@ -26,8 +26,8 @@ namespace ProjectBank.Data
 
                 entity.HasOne(e => e.Account)
                       .WithMany(a => a.Transactions)
-                      .HasForeignKey(e => e.AccID)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .HasForeignKey(e => e.AccountId)
+                      .HasPrincipalKey(x => x.id);
             });
         }
     }
