@@ -6,13 +6,14 @@ namespace ProjectBank.Entities
     public class Card
     {
         [Key]
-        public Guid id { get; set; }
+        public Guid Id { get; set; }
         public int NumberCard { get; set; }
         public string CardName { get; set; }
         public int Pincode { get; set; }
         public DateTime Data { get; set; }
         public int CVV { get; set; }
         public double Balance { get; set; }
-        public Guid AccLink { get; set; }
+        public Guid AccID { get; set; }
+        public Account Account { get; set; }
     }
 }
