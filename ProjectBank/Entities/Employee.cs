@@ -8,5 +8,7 @@
         public string Country { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
+        public Guid AccID { get; set; }
+        public ICollection<Account> Account { get; set; }
     }
 }

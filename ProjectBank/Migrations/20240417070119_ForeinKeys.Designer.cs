@@ -12,8 +12,8 @@ using ProjectBank.Data;
 namespace ProjectBank.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240415060314_Initial")]
-    partial class Initial
+    [Migration("20240417070119_ForeinKeys")]
+    partial class ForeinKeys
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,54 +25,55 @@ namespace ProjectBank.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ProjectBank.Entities.Account", b =>
+            modelBuilder.Entity("AccountEmployee", b =>
                 {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("AccountId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("EmployeesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("AccountId", "EmployeesId");
+
+                    b.HasIndex("EmployeesId");
+
+                    b.ToTable("AccountEmployee");
+                });
+
+            modelBuilder.Entity("ProjectBank.Entities.Account", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<double>("Balance")
                         .HasColumnType("float");
 
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("CustomerID")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("EmployeeID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("Id");
 
-                    b.HasKey("id");
+                    b.HasIndex("CustomerID")
+                        .IsUnique();
 
                     b.ToTable("Accounts");
                 });
 
             modelBuilder.Entity("ProjectBank.Entities.Card", b =>
                 {
-                    b.Property<Guid>("id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("AccLink")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("Accountid")
+                    b.Property<Guid>("AccountID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<double>("Balance")
@@ -94,9 +95,9 @@ namespace ProjectBank.Migrations
                     b.Property<int>("Pincode")
                         .HasColumnType("int");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
-                    b.HasIndex("Accountid");
+                    b.HasIndex("AccountID");
 
                     b.ToTable("Cards");
                 });
@@ -138,6 +139,9 @@ namespace ProjectBank.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("AccID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Country")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -169,10 +173,10 @@ namespace ProjectBank.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("AccID")
+                    b.Property<Guid>("AccountId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("AccountId")
+                    b.Property<Guid>("CardID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<double>("Sum")
@@ -185,32 +189,81 @@ namespace ProjectBank.Migrations
 
                     b.HasIndex("AccountId");
 
+                    b.HasIndex("CardID");
+
                     b.ToTable("Transactions");
+                });
+
+            modelBuilder.Entity("AccountEmployee", b =>
+                {
+                    b.HasOne("ProjectBank.Entities.Account", null)
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProjectBank.Entities.Employee", null)
+                        .WithMany()
+                        .HasForeignKey("EmployeesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ProjectBank.Entities.Account", b =>
+                {
+                    b.HasOne("ProjectBank.Entities.Customer", "Customers")
+                        .WithOne("Account")
+                        .HasForeignKey("ProjectBank.Entities.Account", "CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customers");
                 });
 
             modelBuilder.Entity("ProjectBank.Entities.Card", b =>
                 {
-                    b.HasOne("ProjectBank.Entities.Account", null)
-                        .WithMany("Cards")
-                        .HasForeignKey("Accountid");
-                });
-
-            modelBuilder.Entity("ProjectBank.Entities.Transactions", b =>
-                {
                     b.HasOne("ProjectBank.Entities.Account", "Account")
-                        .WithMany("Transactions")
-                        .HasForeignKey("AccountId")
+                        .WithMany("Cards")
+                        .HasForeignKey("AccountID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Account");
                 });
 
+            modelBuilder.Entity("ProjectBank.Entities.Transactions", b =>
+                {
+                    b.HasOne("ProjectBank.Entities.Account", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProjectBank.Entities.Card", "Card")
+                        .WithMany("Transactions")
+                        .HasForeignKey("CardID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+
+                    b.Navigation("Card");
+                });
+
             modelBuilder.Entity("ProjectBank.Entities.Account", b =>
                 {
                     b.Navigation("Cards");
+                });
 
+            modelBuilder.Entity("ProjectBank.Entities.Card", b =>
+                {
                     b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("ProjectBank.Entities.Customer", b =>
+                {
+                    b.Navigation("Account")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

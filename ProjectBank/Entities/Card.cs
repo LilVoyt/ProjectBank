@@ -13,7 +13,9 @@ namespace ProjectBank.Entities
         public DateTime Data { get; set; }
         public int CVV { get; set; }
         public double Balance { get; set; }
-        public Guid AccID { get; set; }
+        //Foregin
+        public Guid AccountID { get; set; }
         public Account Account { get; set; }
+        public ICollection<Transactions> Transactions { get; set; }
     }
 }

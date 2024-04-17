@@ -14,31 +14,6 @@ namespace ProjectBank.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Transactions>(entity =>
-            {
-                entity.HasKey(e => e.Id); 
-
-                entity.Property(e => e.AccID)
-                      .IsRequired();
-
-                entity.HasOne(e => e.Account)
-                      .WithMany(a => a.Transactions)
-                      .HasForeignKey(e => e.AccID)
-                      .HasPrincipalKey(x => x.Id)
-                      .OnDelete(DeleteBehavior.Cascade);
-            });
-
-            modelBuilder.Entity<Card>(entity =>
-            {
-                entity.HasKey(b => b.Id);
-
-                entity.Property(b => b.AccID)
-                  .IsRequired();
-
-                entity.HasOne(b => b.Account)
-                  .WithMany(a => a.Cards)
-                  .HasForeignKey(b => b.AccID);
-            });
             modelBuilder.Entity<Account>(entity =>
             {
                 entity.HasKey(b => b.Id);
@@ -46,10 +21,40 @@ namespace ProjectBank.Data
                 entity.Property(b => b.CustomerID)
                   .IsRequired();
 
-                entity.HasOne(b => b.Customer)
-                .WithOne(a => a.Account)
-                .HasForeignKey<Account>(b => b.CustomerID);
+                entity.Property(b => b.EmployeeID)
+                .IsRequired();
 
+                entity.HasOne(b => b.Customers)
+                .WithMany(a => a.Account)
+                .HasForeignKey(b => b.CustomerID);
+
+                entity.HasMany(b => b.Employees)
+                .WithMany(a => a.Account);
+            });
+
+            modelBuilder.Entity<Card>(entity =>
+            {
+                entity.HasKey(b => b.Id);
+
+                entity.Property(b => b.AccountID)
+                .IsRequired();
+
+                entity.HasOne(b => b.Account)
+                .WithMany(a => a.Cards)
+                .HasForeignKey(b => b.AccountID);
+            });
+
+            modelBuilder.Entity<Transactions>(entity =>
+            {
+                entity.HasKey(b => b.Id);
+
+                entity.Property(b => b.CardID)
+                .IsRequired();
+
+                entity.HasOne(b => b.Card)
+                .WithMany(a => a.Transactions)
+                .HasForeignKey(b => b.CardID)
+                .OnDelete(DeleteBehavior.NoAction);
             });
         }
     }
