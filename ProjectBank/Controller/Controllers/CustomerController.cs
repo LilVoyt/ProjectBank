@@ -1,149 +1,73 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ProjectBank.Controller.Services;
 using ProjectBank.Data;
 using ProjectBank.Entities;
 
 namespace ProjectBank.Controller.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/customers")]
     [ApiController]
     public class CustomerController : ControllerBase
     {
         private readonly DataContext _context;
+        private readonly ICustomerService customerService;
 
-        public CustomerController(DataContext context)
+        public CustomerController(DataContext context, ICustomerService customerService)
         {
             _context = context;
+            this.customerService = customerService;
         }
 
-        //Customer
         [HttpGet]
-        public async Task<ActionResult<List<Customer>>> GetAllCustomers()
+        public async Task<ActionResult<List<Customer>>> GetAllCustomers() //work
         {
-            var customers = await _context.Customers.ToListAsync();
+            var customers = await customerService.GetAllCustomers();
 
             return Ok(customers);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Customer>> GetCustomer(Guid id)
+        public async Task<ActionResult<Customer>> GetCustomer(Guid id) //work
         {
-            var account = await _context.Customers.FindAsync(id);
-
-            if (account == null)
+            var customer = await _context.Customers.FindAsync(id);
+            if (customer == null)
             {
                 return NotFound();
             }
-
-            return account;
+            return Ok(customer);
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<Customer>>> AddCustomer(Customer customer)
+        public async Task<ActionResult<List<Customer>>> AddCustomer(Customer customer) //тут
         {
-            _context.Customers.Add(customer);
-            await _context.SaveChangesAsync();
+            await customerService.AddCustomer(customer);
 
-            return Ok(await GetAllCustomers()); 
+            return Ok(await GetAllCustomers());
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCustomer(Guid id, Customer customer)
+    public async Task<IActionResult> UpdateCustomer(Guid id) //Work
+    {
+        if(id == Guid.Empty)
         {
-            if (id != customer.Id)
+            return BadRequest();
+        }
+        await customerService.UpdateCustomer(id);
+        return Ok(id);
+    }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCustomer(Guid id) //work
+        {
+            if (id == Guid.Empty)
             {
                 return BadRequest();
             }
-
-            _context.Entry(customer).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
+            await customerService.DeleteCustomer(id);
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCustomer(Guid id)
-        {
-            var account = await _context.Customers.FindAsync(id);
-            if (account == null)
-            {
-                return NotFound();
-            }
-
-            _context.Customers.Remove(account);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        public class AccountController : ControllerBase
-        {
-            private readonly DataContext _context;
-
-            public AccountController(DataContext context)
-            {
-                _context = context;
-            }
-            //Account
-            [HttpGet]
-            public async Task<ActionResult<List<Account>>> GetAllAccounts()
-            {
-                var customers = await _context.Accounts.ToListAsync();
-
-                return Ok(customers);
-            }
-
-            [HttpGet("{id}")]
-            public async Task<ActionResult<Account>> GetAccount(Guid id)
-            {
-                var account = await _context.Accounts.FindAsync(id);
-
-                if (account == null)
-                {
-                    return NotFound();
-                }
-
-                return account;
-            }
-
-            [HttpPost]
-            public async Task<ActionResult<List<Account>>> AddAccount(Account account)
-            {
-                _context.Accounts.Add(account);
-                await _context.SaveChangesAsync();
-
-                return Ok(await GetAllAccounts()); //Maybe error
-            }
-
-            [HttpPut("{id}")]
-            public async Task<IActionResult> UpdateAccount(Guid id, Account account)
-            {
-                if (id != account.Id)
-                {
-                    return BadRequest();
-                }
-
-                _context.Entry(account).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
-
-                return NoContent();
-            }
-
-            [HttpDelete("{id}")]
-            public async Task<IActionResult> DeleteAccount(Guid id)
-            {
-                var account = await _context.Accounts.FindAsync(id);
-                if (account == null)
-                {
-                    return NotFound();
-                }
-
-                _context.Accounts.Remove(account);
-                await _context.SaveChangesAsync();
-
-                return NoContent();
-            }
-        }
     }
 }

@@ -7,35 +7,35 @@ using System.Net;
 
 namespace ProjectBank.Controller.Services
 {
-    public interface ICustomerService
+    public interface IAccountService
     {
-        Task<ActionResult<List<Account>>> GetAllCustomers();
-        Task<Customer> GetCustomer(Guid id);
-        Task<Guid> AddCustomer(Customer customer);
-        Task<Guid> UpdateCustomer(Guid id);
-        Task<Guid> DeleteCustomer(Guid id);
+        Task<ActionResult<List<Account>>> GetAllAccount();
+        Task<Customer> GetAccount(Guid id);
+        Task<Guid> AddAccount(Customer customer);
+        Task<Guid> UpdateAccount(Guid id);
+        Task<Guid> DeleteAccount(Guid id);
     }
 
-    public class CustomerService : ICustomerService
+    public class AccountService : IAccountService
     {
         private readonly DataContext _context;
 
-        public CustomerService(DataContext context)
+        public AccountService(DataContext context)
         {
             _context = context;
         }
 
-        public async Task<Guid> AddCustomer(Customer customer)
+        public async Task<Guid> AddAccount(Account account)
         {
-            customer.Id = Guid.NewGuid();
-            _context.Customers.Add(customer);
+            account.Id = Guid.NewGuid();
+            _context.Accounts.Add(account);
             await _context.SaveChangesAsync();
 
-            return customer.Id;
+            return account.Id;
         }
 
 
-        public async Task<Guid> DeleteCustomer(Guid id)
+        public async Task<Guid> DeleteAccount(Guid id)
         {
             var account = await _context.Accounts.FindAsync(id);
             if (account == null)
@@ -75,6 +75,8 @@ namespace ProjectBank.Controller.Services
             {
                 return Guid.Empty;
             }
+
+            _context.Entry(account).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
             return id;
