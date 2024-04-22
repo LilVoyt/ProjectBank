@@ -9,6 +9,6 @@
         public string Phone { get; set; }
         public string Email { get; set; }
         public Guid AccID { get; set; }
-        public ICollection<Account> Account { get; set; }
+        public virtual ICollection<Account> Account { get; set; }
     }
 }

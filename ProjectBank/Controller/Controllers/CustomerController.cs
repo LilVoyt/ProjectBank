@@ -48,13 +48,13 @@ namespace ProjectBank.Controller.Controllers
         }
 
         [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateCustomer(Guid id) //Work
+    public async Task<IActionResult> UpdateCustomer(Guid id, Customer customer) //Work
     {
         if(id == Guid.Empty)
         {
             return BadRequest();
         }
-        await customerService.UpdateCustomer(id);
+        await customerService.UpdateCustomer(id, customer);
         return Ok(id);
     }
 

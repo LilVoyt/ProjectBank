@@ -10,9 +10,9 @@ namespace ProjectBank.Controller.Services
     public interface IAccountService
     {
         Task<ActionResult<List<Account>>> GetAllAccount();
-        Task<Customer> GetAccount(Guid id);
-        Task<Guid> AddAccount(Customer customer);
-        Task<Guid> UpdateAccount(Guid id);
+        Task<Account> GetAccount(Guid id);
+        Task<Guid> AddAccount(Account customer);
+        Task<Guid> UpdateAccount(Guid id, Account account);
         Task<Guid> DeleteAccount(Guid id);
     }
 
@@ -49,32 +49,36 @@ namespace ProjectBank.Controller.Services
             return id;
         }
 
-        public async Task<ActionResult<List<Account>>> GetAllCustomers()
+        public async Task<ActionResult<List<Account>>> GetAllAccount()
         {
             var customers = await _context.Accounts.ToListAsync();
 
             return customers;
         }
 
-        public async Task<Customer> GetCustomer(Guid id)
+        public async Task<Account> GetAccount(Guid id)
         {
-            var customer = await _context.Customers.FindAsync(id);
+            var account = await _context.Accounts.FindAsync(id);
 
-            if (customer == null)
+            if (account == null)
             {
                 return null;
             }
 
-            return customer;
+            return account;
         }
 
-        public async Task<Guid> UpdateCustomer(Guid id)
+        public async Task<Guid> UpdateAccount(Guid id, Account newChanges)
         {
             var account = await _context.Accounts.FindAsync(id);
             if (account == null)
             {
                 return Guid.Empty;
             }
+            account.Name = newChanges.Name;
+            account.Balance = newChanges.Balance;
+            account.EmployeeID = newChanges.EmployeeID;
+            account.CustomerID = newChanges.CustomerID;
 
             _context.Entry(account).State = EntityState.Modified;
             await _context.SaveChangesAsync();

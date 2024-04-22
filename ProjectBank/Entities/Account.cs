@@ -11,8 +11,8 @@ namespace ProjectBank.Entities
         //Foreign
         public Guid EmployeeID { get; set; }
         public Guid CustomerID { get; set; }
-        public Customer Customers { get; set; }
-        public ICollection<Card> Cards { get; set; }
-        public ICollection<Employee> Employees { get; set; }
+        public virtual Customer Customers { get; set; }
+        public virtual ICollection<Card> Cards { get; set; }
+        public virtual ICollection<Employee> Employees { get; set; }
     }
 }

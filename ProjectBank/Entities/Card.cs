@@ -15,7 +15,7 @@ namespace ProjectBank.Entities
         public double Balance { get; set; }
         //Foregin
         public Guid AccountID { get; set; }
-        public Account Account { get; set; }
-        public ICollection<Transactions> Transactions { get; set; }
+        public virtual Account Account { get; set; }
+        public virtual ICollection<Transactions> Transactions { get; set; }
     }
 }
