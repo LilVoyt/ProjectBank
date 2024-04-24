@@ -11,7 +11,7 @@ namespace ProjectBank.Controller.Services
     public interface ICustomerService
     {
         Task<ActionResult<List<Customer>>> GetAllCustomers();
-        Task<Customer> GetCustomer(Guid id);
+        Task<CustomerRequestModel> GetCustomer(Guid id);
         Task<Customer> AddCustomer(CustomerRequestModel customer);
         Task<Guid> UpdateCustomer(Guid id, Customer newChanges);
         Task<Guid> DeleteCustomer(Guid id);
@@ -25,20 +25,6 @@ namespace ProjectBank.Controller.Services
         {
             _context = context;
         }
-
-        //public async Task<Customer> AddCustomer(Customer customer)
-        //{
-        //    if (customer == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(customer));
-        //    }
-
-        //    customer.Id = Guid.NewGuid();
-        //    _context.Customers.Add(customer);
-        //    await _context.SaveChangesAsync();
-
-        //    return customer;
-        //}
         public async Task<Customer> AddCustomer(CustomerRequestModel customer)
         {
             if (customer == null)
@@ -52,18 +38,6 @@ namespace ProjectBank.Controller.Services
 
             return res;
         }
-        private Customer MapRequestToCustomer(CustomerRequestModel requestModel)
-        {
-            var customer = new Customer();
-            customer.Id = Guid.NewGuid();
-            customer.Name = requestModel.Name;
-            customer.LastName = requestModel.LastName;
-            customer.Country = requestModel.Country;
-            customer.Phone = requestModel.Phone;
-            customer.Email = requestModel.Email;
-            return customer;
-        }
-
 
         public async Task<Guid> DeleteCustomer(Guid id)
         {
@@ -86,16 +60,17 @@ namespace ProjectBank.Controller.Services
             return customers;
         }
 
-        public async Task<Customer> GetCustomer(Guid id)
+        public async Task<CustomerRequestModel> GetCustomer(Guid id)
         {
             var customer = await _context.Customers.FindAsync(id);
+            var res = MapRequestToDB(customer);
 
             if (customer == null)
             {
                 return null;
             }
 
-            return customer;
+            return res;
         }
 
         public async Task<Guid> UpdateCustomer(Guid id, Customer newChanges)//need changes
@@ -114,6 +89,29 @@ namespace ProjectBank.Controller.Services
             await _context.SaveChangesAsync();
 
             return id;
+        }
+        private Customer MapRequestToCustomer(CustomerRequestModel requestModel)
+        {
+            var customer = new Customer();
+            customer.Id = Guid.NewGuid();
+            customer.Name = requestModel.Name;
+            customer.LastName = requestModel.LastName;
+            customer.Country = requestModel.Country;
+            customer.Phone = requestModel.Phone;
+            customer.Email = requestModel.Email;
+            return customer;
+        }
+
+        private CustomerRequestModel MapRequestToDB(Customer customer)
+        {
+            var requestModel = new CustomerRequestModel();
+            requestModel.Name = customer.Name;
+            requestModel.LastName = customer.LastName;
+            requestModel.Country = customer.Country;
+            requestModel.Phone = customer.Phone;
+            requestModel.Email = customer.Email;
+
+            return requestModel;
         }
     }
 }

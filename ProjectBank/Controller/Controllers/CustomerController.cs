@@ -30,14 +30,13 @@ namespace ProjectBank.Controller.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Customer>> GetCustomer(Guid id) //work
+        public async Task<ActionResult<CustomerRequestModel>> GetCustomer(CustomerRequestModel requestModel) //work
         {
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer == null)
+            if (requestModel == null)
             {
                 return NotFound();
             }
-            return Ok(customer);
+            return Ok(requestModel);
         }
 
         [HttpPost]
