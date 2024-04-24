@@ -24,9 +24,9 @@ namespace ProjectBank.Data
                 entity.Property(b => b.EmployeeID)
                 .IsRequired();
 
-                entity.HasOne(b => b.Customers)
-                .WithMany(a => a.Account)
-                .HasForeignKey(b => b.CustomerID);
+                entity.HasOne(b => b.Customer)
+                .WithOne(a => a.Account)
+                .HasForeignKey<Account>(b => b.CustomerID);
 
                 entity.HasMany(b => b.Employees)
                 .WithMany(a => a.Account);

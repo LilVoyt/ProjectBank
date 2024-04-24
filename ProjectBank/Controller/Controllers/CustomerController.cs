@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using ProjectBank.Controller.Services;
 using ProjectBank.Data;
 using ProjectBank.Entities;
+using ProjectBank.Models;
 
 namespace ProjectBank.Controller.Controllers
 {
@@ -40,23 +41,34 @@ namespace ProjectBank.Controller.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<Customer>>> AddCustomer(Customer customer) //тут
+        public async Task<ActionResult<Customer>> AddCustomer(CustomerRequestModel customer)
         {
-            await customerService.AddCustomer(customer);
-
-            return Ok(await GetAllCustomers());
+            try
+            {
+                var createdCustomer = await customerService.AddCustomer(customer);
+                return Ok(createdCustomer);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
+
 
         [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateCustomer(Guid id, Customer customer) //Work
-    {
-        if(id == Guid.Empty)
+        public async Task<IActionResult> UpdateCustomer(Guid id, Customer customer) //Work
         {
-            return BadRequest();
+            if (id == Guid.Empty)
+            {
+                return BadRequest();
+            }
+            await customerService.UpdateCustomer(id, customer);
+            return Ok(id);
         }
-        await customerService.UpdateCustomer(id, customer);
-        return Ok(id);
-    }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomer(Guid id) //work

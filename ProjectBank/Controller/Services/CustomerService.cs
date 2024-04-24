@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjectBank.Data;
 using ProjectBank.Entities;
+using ProjectBank.Models;
 using System.Net;
 
 namespace ProjectBank.Controller.Services
@@ -11,7 +12,7 @@ namespace ProjectBank.Controller.Services
     {
         Task<ActionResult<List<Customer>>> GetAllCustomers();
         Task<Customer> GetCustomer(Guid id);
-        Task<Guid> AddCustomer(Customer customer);
+        Task<Customer> AddCustomer(CustomerRequestModel customer);
         Task<Guid> UpdateCustomer(Guid id, Customer newChanges);
         Task<Guid> DeleteCustomer(Guid id);
     }
@@ -25,13 +26,42 @@ namespace ProjectBank.Controller.Services
             _context = context;
         }
 
-        public async Task<Guid> AddCustomer(Customer customer)
+        //public async Task<Customer> AddCustomer(Customer customer)
+        //{
+        //    if (customer == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(customer));
+        //    }
+
+        //    customer.Id = Guid.NewGuid();
+        //    _context.Customers.Add(customer);
+        //    await _context.SaveChangesAsync();
+
+        //    return customer;
+        //}
+        public async Task<Customer> AddCustomer(CustomerRequestModel customer)
         {
-            customer.Id = Guid.NewGuid();
-            _context.Customers.Add(customer);
+            if (customer == null)
+            {
+                throw new ArgumentNullException(nameof(customer));
+            }
+            var res = MapRequestToCustomer(customer);
+
+            _context.Customers.AddAsync(res);
             await _context.SaveChangesAsync();
 
-            return customer.Id;
+            return res;
+        }
+        private Customer MapRequestToCustomer(CustomerRequestModel requestModel)
+        {
+            var customer = new Customer();
+            customer.Id = Guid.NewGuid();
+            customer.Name = requestModel.Name;
+            customer.LastName = requestModel.LastName;
+            customer.Country = requestModel.Country;
+            customer.Phone = requestModel.Phone;
+            customer.Email = requestModel.Email;
+            return customer;
         }
 
 
