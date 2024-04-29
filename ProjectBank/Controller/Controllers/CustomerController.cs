@@ -21,7 +21,7 @@ namespace ProjectBank.Controller.Controllers
             this.customerService = customerService;
         }
 
-        [HttpGet]
+        [HttpGet("GetAllCustomers")]
         public async Task<ActionResult<List<Customer>>> GetAllCustomers() //work
         {
             var customers = await customerService.GetAllCustomers();
@@ -29,17 +29,20 @@ namespace ProjectBank.Controller.Controllers
             return Ok(customers);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerRequestModel>> GetCustomer(CustomerRequestModel requestModel) //work
+        [HttpGet("GetCustomer/{id}")]
+        public async Task<ActionResult<CustomerRequestModel>> GetCustomer(Guid id) //work
         {
-            if (requestModel == null)
+
+            if (id == Guid.Empty)
             {
                 return NotFound();
             }
-            return Ok(requestModel);
+            var customer = await customerService.GetCustomer(id);
+
+            return Ok(customer);
         }
 
-        [HttpPost]
+        [HttpPost("AddCustomer")]
         public async Task<ActionResult<Customer>> AddCustomer(CustomerRequestModel customer)
         {
             try
@@ -58,8 +61,20 @@ namespace ProjectBank.Controller.Controllers
         }
 
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCustomer(Guid id, Customer customer) //Work
+        [HttpDelete("DeleteCustomer/{id}")]
+        public async Task<IActionResult> DeleteCustomer(Guid id) //work
+        {
+            if (id == Guid.Empty)
+            {
+                return BadRequest();
+            }
+            await customerService.DeleteCustomer(id);   
+            
+            return NoContent();
+        }
+
+        [HttpPut("UpdateCustomer/{id}")]
+        public async Task<IActionResult> UpdateCustomer(Guid id, CustomerRequestModel customer) //Work
         {
             if (id == Guid.Empty)
             {
@@ -67,17 +82,6 @@ namespace ProjectBank.Controller.Controllers
             }
             await customerService.UpdateCustomer(id, customer);
             return Ok(id);
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCustomer(Guid id) //work
-        {
-            if (id == Guid.Empty)
-            {
-                return BadRequest();
-            }
-            await customerService.DeleteCustomer(id);
-            return NoContent();
         }
 
     }

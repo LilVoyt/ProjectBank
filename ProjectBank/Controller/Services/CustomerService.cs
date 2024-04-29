@@ -13,7 +13,7 @@ namespace ProjectBank.Controller.Services
         Task<ActionResult<List<Customer>>> GetAllCustomers();
         Task<CustomerRequestModel> GetCustomer(Guid id);
         Task<Customer> AddCustomer(CustomerRequestModel customer);
-        Task<Guid> UpdateCustomer(Guid id, Customer newChanges);
+        Task<Guid> UpdateCustomer(Guid id, CustomerRequestModel requestModel);
         Task<Guid> DeleteCustomer(Guid id);
     }
 
@@ -63,28 +63,24 @@ namespace ProjectBank.Controller.Services
         public async Task<CustomerRequestModel> GetCustomer(Guid id)
         {
             var customer = await _context.Customers.FindAsync(id);
-            var res = MapRequestToDB(customer);
 
             if (customer == null)
             {
                 return null;
             }
+            var res = MapRequestToDB(customer);
 
             return res;
         }
 
-        public async Task<Guid> UpdateCustomer(Guid id, Customer newChanges)//need changes
+        public async Task<Guid> UpdateCustomer(Guid id, CustomerRequestModel requestModel)//need changes
         {
             var account = await _context.Customers.FindAsync(id);
             if (account == null)
             {
                 return Guid.Empty;
             }
-            account.Name = newChanges.Name;
-            account.LastName = newChanges.LastName;
-            account.Country = newChanges.Country;
-            account.Phone = newChanges.Phone;
-            account.Email = newChanges.Email;
+            account = MapRequestToSet(account, requestModel);
             _context.Customers.Update(account);
             await _context.SaveChangesAsync();
 
@@ -112,6 +108,16 @@ namespace ProjectBank.Controller.Services
             requestModel.Email = customer.Email;
 
             return requestModel;
+        }
+        private Customer MapRequestToSet(Customer res, CustomerRequestModel customer)
+        {
+            res.Name = customer.Name;
+            res.LastName = customer.LastName;
+            res.Country = customer.Country;
+            res.Phone = customer.Phone;
+            res.Email = customer.Email;
+
+            return res;
         }
     }
 }
