@@ -56,7 +56,7 @@ namespace ProjectBank.Controller.Services
             }
             var res = MapRequestToCustomer(customer);
 
-            _context.Customers.AddAsync(res);
+            await _context.Customers.AddAsync(res);
             await _context.SaveChangesAsync();
 
             return res;

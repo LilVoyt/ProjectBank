@@ -18,6 +18,11 @@ namespace ProjectBank.Controller.Services
     {
         private readonly DataContext _context;
 
+        public TransactionService(DataContext context)
+        {
+            _context = context;
+        }
+
         public async Task<Transactions> AddTransactions(TransactionRequestModel transaction)
         {
             if (transaction == null)
@@ -26,7 +31,7 @@ namespace ProjectBank.Controller.Services
             }
             var res = MapRequestToTransaction(transaction);
 
-            _context.Transactions.AddAsync(res);
+            await _context.Transactions.AddAsync(res);
             await _context.SaveChangesAsync();
 
             return res;
