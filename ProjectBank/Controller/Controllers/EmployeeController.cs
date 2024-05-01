@@ -6,7 +6,7 @@ using ProjectBank.Models;
 
 namespace ProjectBank.Controller.Controllers
 {
-    [Route("api/customers")]
+    [Route("api/employee")]
     [ApiController]
     public class EmployeeController : ControllerBase
     {
@@ -43,7 +43,7 @@ namespace ProjectBank.Controller.Controllers
 
 
         [HttpPost("AddEmployee")]
-        public async Task<ActionResult<Employee>> AddCustomer(EmployeeRequestModel employee)
+        public async Task<ActionResult<Employee>> AddEmployee(EmployeeRequestModel employee)
         {
             try
             {

@@ -2,6 +2,7 @@
 using ProjectBank.Controller.Services;
 using ProjectBank.Data;
 using ProjectBank.Entities;
+using ProjectBank.Models;
 
 namespace ProjectBank.Controller.Controllers
 {
@@ -18,7 +19,7 @@ namespace ProjectBank.Controller.Controllers
             this.accountService = accountService;
         }
 
-        [HttpGet]
+        [HttpGet("GetAllAccount")]
         public async Task<ActionResult<List<Account>>> GetAllAccount() //work
         {
             var account = await accountService.GetAllAccount();
@@ -26,7 +27,7 @@ namespace ProjectBank.Controller.Controllers
             return Ok(account);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetAccount/{id}")]
         public async Task<ActionResult<Account>> GetAccount(Guid id) //work
         {
             var account = await _context.Accounts.FindAsync(id);
@@ -37,26 +38,36 @@ namespace ProjectBank.Controller.Controllers
             return Ok(account);
         }
 
-        [HttpPost]
-        public async Task<ActionResult<List<Account>>> AddAccount(Account account) //тут
+        [HttpPost("AddAccount")]
+        public async Task<ActionResult<Account>> AddAccount(AccountRequestModel account) //тут
         {
-            await accountService.AddAccount(account);
-
-            return Ok(await GetAllAccount());
+            try
+            {
+                var createdAccount = await accountService.AddAccount(account);
+                return Ok(createdAccount);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAccount(Guid id, Account customer) //Work
+        [HttpPut("UpdateAccount/{id}")]
+        public async Task<IActionResult> UpdateAccount(Guid id, AccountRequestModel account) //Work
         {
             if (id == Guid.Empty)
             {
                 return BadRequest();
             }
-            await accountService.UpdateAccount(id, customer);
+            await accountService.UpdateAccount(id, account);
             return Ok(id);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteAccount/{id}")]
         public async Task<IActionResult> DeleteAccount(Guid id) //work
         {
             if (id == Guid.Empty)
