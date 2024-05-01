@@ -12,6 +12,6 @@ namespace ProjectBank.Entities
         public double Sum { get; set; }
         public Guid CardID { get; set; }
         public virtual Account Account { get; set; }
-        public Card Card { get; set; }
+        public virtual Card Card { get; set; }
     }
 }

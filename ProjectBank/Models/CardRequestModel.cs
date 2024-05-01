@@ -1,12 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Data.SqlTypes;
-
-namespace ProjectBank.Entities
+﻿namespace ProjectBank.Models
 {
-    public class Card
+    public class CardRequestModel
     {
-        [Key]
-        public Guid Id { get; set; }
         public int NumberCard { get; set; }
         public string CardName { get; set; }
         public int Pincode { get; set; }
@@ -14,7 +9,5 @@ namespace ProjectBank.Entities
         public int CVV { get; set; }
         public double Balance { get; set; }
         public Guid AccountID { get; set; }
-        public virtual Account Account { get; set; }
-        public virtual ICollection<Transactions> Transactions { get; set; }
     }
 }

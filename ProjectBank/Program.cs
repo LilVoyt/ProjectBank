@@ -13,6 +13,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ICustomerService, CustomerService>();//ТУт всі додати
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ICardService, CardService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
  
 
 //Here changes

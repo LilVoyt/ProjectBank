@@ -78,8 +78,6 @@ namespace ProjectBank.Controller.Services
         }
 
 
-
-
         public async Task<Guid> UpdateAccount(Guid id, AccountRequestModel requestModel)
         {
             var account = await _context.Accounts.FindAsync(id);
