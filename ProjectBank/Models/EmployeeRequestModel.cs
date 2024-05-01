@@ -1,13 +1,11 @@
-﻿namespace ProjectBank.Entities
+﻿namespace ProjectBank.Models
 {
-    public class Employee
+    public class EmployeeRequestModel
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public string LastName { get; set; }
         public string Country { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
-        public virtual ICollection<Account> Accounts { get; set; }
     }
 }

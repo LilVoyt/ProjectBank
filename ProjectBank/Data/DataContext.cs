@@ -29,7 +29,7 @@ namespace ProjectBank.Data
                 .HasForeignKey<Account>(b => b.CustomerID);
 
                 entity.HasMany(b => b.Employees)
-                .WithMany(a => a.Account);
+                .WithMany(a => a.Accounts);
             });
 
             modelBuilder.Entity<Card>(entity =>

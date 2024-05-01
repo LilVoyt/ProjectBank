@@ -25,6 +25,29 @@ namespace ProjectBank.Controller.Services
         {
             _context = context;
         }
+
+        public async Task<ActionResult<List<Customer>>> GetAllCustomers()
+        {
+            var customers = await _context.Customers.ToListAsync();
+
+            return customers;
+        }
+
+
+        public async Task<CustomerRequestModel> GetCustomer(Guid id)
+        {
+            var customer = await _context.Customers.FindAsync(id);
+
+            if (customer == null)
+            {
+                return null;
+            }
+            var res = MapRequestToDB(customer);
+
+            return res;
+        }
+
+
         public async Task<Customer> AddCustomer(CustomerRequestModel customer)
         {
             if (customer == null)
@@ -38,6 +61,7 @@ namespace ProjectBank.Controller.Services
 
             return res;
         }
+
 
         public async Task<Guid> DeleteCustomer(Guid id)
         {
@@ -53,25 +77,6 @@ namespace ProjectBank.Controller.Services
             return id;
         }
 
-        public async Task<ActionResult<List<Customer>>> GetAllCustomers()
-        {
-            var customers = await _context.Customers.ToListAsync();
-
-            return customers;
-        }
-
-        public async Task<CustomerRequestModel> GetCustomer(Guid id)
-        {
-            var customer = await _context.Customers.FindAsync(id);
-
-            if (customer == null)
-            {
-                return null;
-            }
-            var res = MapRequestToDB(customer);
-
-            return res;
-        }
 
         public async Task<Guid> UpdateCustomer(Guid id, CustomerRequestModel requestModel)//need changes
         {
@@ -86,6 +91,8 @@ namespace ProjectBank.Controller.Services
 
             return id;
         }
+
+
         private Customer MapRequestToCustomer(CustomerRequestModel requestModel)
         {
             var customer = new Customer();
@@ -95,8 +102,10 @@ namespace ProjectBank.Controller.Services
             customer.Country = requestModel.Country;
             customer.Phone = requestModel.Phone;
             customer.Email = requestModel.Email;
+
             return customer;
         }
+
 
         private CustomerRequestModel MapRequestToDB(Customer customer)
         {
@@ -109,6 +118,7 @@ namespace ProjectBank.Controller.Services
 
             return requestModel;
         }
+
         private Customer MapRequestToSet(Customer res, CustomerRequestModel customer)
         {
             res.Name = customer.Name;
