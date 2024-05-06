@@ -14,11 +14,11 @@ namespace ProjectBank.Controller.Services
         Task<Guid> UpdateCard(Guid id, CardRequestModel requestModel);
         Task<Guid> DeleteCard(Guid id);
     }
-    public class CardService : ICardService
+    public class CardServise : ICardService
     {
         private readonly DataContext _context;
 
-        public CardService(DataContext context)
+        public CardServise(DataContext context)
         {
             _context = context;
         }

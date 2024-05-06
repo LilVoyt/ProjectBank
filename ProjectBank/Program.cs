@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjectBank.Controller.Services;
+using ProjectBank.Controller.Services.MathodsServise;
 using ProjectBank.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,8 +14,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ICustomerService, CustomerService>();//ТУт всі додати
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<ICardService, CardService>();
+builder.Services.AddScoped<ICardService, CardServise>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IMethodsSevice, MethodsService>();
  
 
 //Here changes
