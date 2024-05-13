@@ -7,7 +7,7 @@ namespace ProjectBank.Controller.Services.MathodsServise
 {
     public interface IMethodsSevice
     {
-        Task<ActionResult<Transactions>> MakeTransaction(Guid cardID, double sum);
+        Task<ActionResult<Transaction>> MakeTransaction(Guid cardID, double sum);
     }
     public class MethodsService : IMethodsSevice
     {
@@ -18,12 +18,12 @@ namespace ProjectBank.Controller.Services.MathodsServise
             _context = context;
         }
 
-        public async Task<ActionResult<Transactions>> MakeTransaction(Guid cardID, double sum)
+        public async Task<ActionResult<Transaction>> MakeTransaction(Guid cardID, double sum)
         {
             var card = await _context.Cards.FindAsync(cardID);
-            Transactions transactions = new Transactions();
+            Transaction transactions = new Transaction();
             transactions.Id = Guid.NewGuid();
-            transactions.CardID = cardID;
+            transactions.CardSenderID = cardID;
             transactions.TransactionDate = DateTime.Now;
             transactions.Sum = sum;
             if (card.Balance >= transactions.Sum)
@@ -31,7 +31,7 @@ namespace ProjectBank.Controller.Services.MathodsServise
                 card.Balance -= transactions.Sum;
                 _context.Cards.Update(card);
                 //await _context.SaveChangesAsync();
-                await _context.Transactions.AddAsync(transactions);
+                await _context.Transaction.AddAsync(transactions);
                 await _context.SaveChangesAsync();
                 return transactions;
             }

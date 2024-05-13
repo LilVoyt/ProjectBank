@@ -21,7 +21,7 @@ namespace ProjectBank.Controller.Controllers
         }
 
         [HttpGet("GetAllTransaction")]
-        public async Task<ActionResult<List<Transaction>>> GetAllTransaction() //work
+        public async Task<ActionResult<List<Entities.Transaction>>> GetAllTransaction() //work
         {
             var transaction = await transactionService.GetAllTransaction();
 
@@ -42,7 +42,7 @@ namespace ProjectBank.Controller.Controllers
         }
 
         [HttpPost("AddTransaction")]
-        public async Task<ActionResult<Transaction>> AddTransaction(TransactionRequestModel transaction)
+        public async Task<ActionResult<Entities.Transaction>> AddTransaction(TransactionRequestModel transaction)
         {
             try
             {

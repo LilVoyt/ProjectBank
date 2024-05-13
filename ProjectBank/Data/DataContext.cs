@@ -10,7 +10,7 @@ namespace ProjectBank.Data
         public DbSet<Card> Cards { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet <Employee> Employees { get; set; }
-        public DbSet <Transactions> Transactions { get; set; }
+        public DbSet <Transaction> Transaction { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -44,17 +44,25 @@ namespace ProjectBank.Data
                 .HasForeignKey(b => b.AccountID);
             });
 
-            modelBuilder.Entity<Transactions>(entity =>
+            modelBuilder.Entity<Transaction>(entity =>
             {
                 entity.HasKey(b => b.Id);
 
-                entity.Property(b => b.CardID)
+                entity.Property(b => b.CardSenderID)
                 .IsRequired();
 
-                entity.HasOne(b => b.Card)
-                .WithMany(a => a.Transactions)
-                .HasForeignKey(b => b.CardID)
-                .OnDelete(DeleteBehavior.NoAction);
+                entity.Property(b => b.CardReceiverID)
+                .IsRequired();
+
+                entity.HasOne(e => e.CardSender)
+                  .WithMany(c => c.SentTransactions)
+                  .HasForeignKey(e => e.CardSenderID)
+                  .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(e => e.CardReceiver)
+                      .WithMany(c => c.ReceivedTransactions)
+                      .HasForeignKey(e => e.CardReceiverID)
+                      .OnDelete(DeleteBehavior.NoAction);
             });
         }
     }

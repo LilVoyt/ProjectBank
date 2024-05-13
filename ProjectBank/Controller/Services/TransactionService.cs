@@ -8,9 +8,9 @@ namespace ProjectBank.Controller.Services
 {
     public interface ITransactionService
     {
-        Task<ActionResult<List<Transactions>>> GetAllTransaction();
+        Task<ActionResult<List<Transaction>>> GetAllTransaction();
         Task<TransactionRequestModel> GetTransactions(Guid id);
-        Task<Transactions> AddTransactions(TransactionRequestModel transaction);
+        Task<Transaction> AddTransactions(TransactionRequestModel transaction);
         Task<Guid> UpdateTransactions(Guid id, TransactionRequestModel transaction);
         Task<Guid> DeleteTransactions(Guid id);
     }
@@ -23,7 +23,7 @@ namespace ProjectBank.Controller.Services
             _context = context;
         }
 
-        public async Task<Transactions> AddTransactions(TransactionRequestModel transaction)
+        public async Task<Transaction> AddTransactions(TransactionRequestModel transaction)
         {
             if (transaction == null)
             {
@@ -31,7 +31,7 @@ namespace ProjectBank.Controller.Services
             }
             var res = MapRequestToTransaction(transaction);
 
-            await _context.Transactions.AddAsync(res);
+            await _context.Transaction.AddAsync(res);
             await _context.SaveChangesAsync();
 
             return res;
@@ -39,29 +39,30 @@ namespace ProjectBank.Controller.Services
 
         public async Task<Guid> DeleteTransactions(Guid id)
         {
-            var transaction = await _context.Transactions.FindAsync(id);
+            var transaction = await _context.Transaction.FindAsync(id);
             if (transaction == null)
             {
                 return Guid.Empty;
             }
 
-            transaction.CardID = Guid.Empty;
-            _context.Transactions.Remove(transaction);
+            transaction.CardSenderID = Guid.Empty;
+            transaction.CardReceiverID = Guid.Empty;
+            _context.Transaction.Remove(transaction);
             await _context.SaveChangesAsync();
 
             return id;
         }
 
-        public async Task<ActionResult<List<Transactions>>> GetAllTransaction()
+        public async Task<ActionResult<List<Transaction>>> GetAllTransaction()
         {
-            var transactions = await _context.Transactions.ToListAsync();
+            var transactions = await _context.Transaction.ToListAsync();
 
             return transactions;
         }
 
         public async Task<TransactionRequestModel> GetTransactions(Guid id)
         {
-            var transaction = await _context.Transactions.FindAsync(id);
+            var transaction = await _context.Transaction.FindAsync(id);
 
             if (transaction == null)
             {
@@ -75,45 +76,50 @@ namespace ProjectBank.Controller.Services
 
         public async Task<Guid> UpdateTransactions(Guid id, TransactionRequestModel requestModel)
         {
-            var transaction = await _context.Transactions.FindAsync(id);
+            var transaction = await _context.Transaction.FindAsync(id);
             if (transaction == null)
             {
                 return Guid.Empty;
             }
             transaction = MapRequestToSet(transaction, requestModel);
-            _context.Transactions.Update(transaction);
+            _context.Transaction.Update(transaction);
             await _context.SaveChangesAsync();
 
             return id;
         }
 
 
-        private Transactions MapRequestToTransaction(TransactionRequestModel requestModel)
+        private Transaction MapRequestToTransaction(TransactionRequestModel requestModel)
         {
-            var transaction = new Transactions();
+            var transaction = new Transaction();
             transaction.Id = Guid.NewGuid();
             transaction.TransactionDate = requestModel.TransactionDate;
             transaction.Sum = requestModel.Sum;
-            transaction.CardID = requestModel.CardID;
+            transaction.CardSenderID = requestModel.CardSenderID;
+            transaction.CardReceiverID = requestModel.CardReceiverID;
+
+
 
             return transaction;
         }
 
-        private TransactionRequestModel MapRequestToDB(Transactions transaction)
+        private TransactionRequestModel MapRequestToDB(Transaction transaction)
         {
             var requestModel = new TransactionRequestModel();
             requestModel.TransactionDate = transaction.TransactionDate;
             requestModel.Sum = transaction.Sum;
-            requestModel.CardID = transaction.CardID;
+            requestModel.CardSenderID = transaction.CardSenderID;
+            requestModel.CardReceiverID = transaction.CardReceiverID;
             return requestModel;
         }
 
 
-        private Transactions MapRequestToSet(Transactions res, TransactionRequestModel transaction)
+        private Transaction MapRequestToSet(Transaction res, TransactionRequestModel transaction)
         {
             res.TransactionDate = transaction.TransactionDate;
             res.Sum = transaction.Sum;
-            res.CardID = transaction.CardID;
+            res.CardSenderID = transaction.CardSenderID;
+            res.CardReceiverID = transaction.CardReceiverID;
 
             return res;
         }

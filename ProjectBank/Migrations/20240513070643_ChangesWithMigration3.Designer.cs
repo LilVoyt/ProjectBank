@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectBank.Data;
 
@@ -11,9 +12,11 @@ using ProjectBank.Data;
 namespace ProjectBank.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240513070643_ChangesWithMigration3")]
+    partial class ChangesWithMigration3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -183,8 +186,6 @@ namespace ProjectBank.Migrations
 
                     b.HasIndex("CardReceiverID");
 
-                    b.HasIndex("CardSenderID");
-
                     b.ToTable("Transaction");
                 });
 
@@ -227,21 +228,13 @@ namespace ProjectBank.Migrations
 
             modelBuilder.Entity("ProjectBank.Entities.Transaction", b =>
                 {
-                    b.HasOne("ProjectBank.Entities.Card", "CardReceiver")
-                        .WithMany("ReceivedTransactions")
+                    b.HasOne("ProjectBank.Entities.Card", "Card")
+                        .WithMany("Transactions")
                         .HasForeignKey("CardReceiverID")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("ProjectBank.Entities.Card", "CardSender")
-                        .WithMany("SentTransactions")
-                        .HasForeignKey("CardSenderID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("CardReceiver");
-
-                    b.Navigation("CardSender");
+                    b.Navigation("Card");
                 });
 
             modelBuilder.Entity("ProjectBank.Entities.Account", b =>
@@ -251,9 +244,7 @@ namespace ProjectBank.Migrations
 
             modelBuilder.Entity("ProjectBank.Entities.Card", b =>
                 {
-                    b.Navigation("ReceivedTransactions");
-
-                    b.Navigation("SentTransactions");
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("ProjectBank.Entities.Customer", b =>

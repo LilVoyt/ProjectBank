@@ -21,7 +21,6 @@ namespace ProjectBank.Controller.Controllers.CallMethods
         [HttpGet("MakeTransaction{cardID},{sum}")]
         public async Task<ActionResult<Account>> MakeTransaction(Guid cardID, double sum)
         {
-
             await methodsService.MakeTransaction(cardID, sum);
             return Ok();
         }
