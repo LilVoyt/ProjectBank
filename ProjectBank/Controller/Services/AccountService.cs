@@ -51,7 +51,7 @@ namespace ProjectBank.Controller.Services
         {
             if (account == null)
             {
-                throw new ArgumentNullException(nameof(account));
+                return null;
             }
             var res = MapRequestToAccount(account);
 
@@ -98,7 +98,6 @@ namespace ProjectBank.Controller.Services
             var account = new Account();
             account.Id = Guid.NewGuid();
             account.Name = requestModel.Name;
-            account.Balance = requestModel.Balance;
             account.EmployeeID = requestModel.EmployeeID;
             account.CustomerID = requestModel.CustomerID;
 
@@ -109,7 +108,6 @@ namespace ProjectBank.Controller.Services
         {
             var requestModel = new AccountRequestModel();
             requestModel.Name = account.Name;
-            requestModel.Balance = account.Balance;
             requestModel.EmployeeID = account.EmployeeID;
             requestModel.CustomerID = account.CustomerID;
 
@@ -119,7 +117,6 @@ namespace ProjectBank.Controller.Services
         private Account MapRequestToSet(Account res, AccountRequestModel account)
         {
             res.Name = account.Name;
-            res.Balance = account.Balance;
             res.EmployeeID = account.EmployeeID;
             res.CustomerID = account.CustomerID;
 

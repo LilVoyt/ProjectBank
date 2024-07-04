@@ -8,6 +8,7 @@ namespace ProjectBank.Controller.Services.MathodsServise
     public interface IMethodsSevice
     {
         Task<ActionResult<Transaction>> MakeTransaction(Guid cardID, double sum);
+        Task<ActionResult<Transaction>> MakeTransaction(Guid senderCardID, Guid receiverCardID, double sum);
     }
     public class MethodsService : IMethodsSevice
     {
@@ -39,6 +40,32 @@ namespace ProjectBank.Controller.Services.MathodsServise
             {
                 return null;
             }
+        }
+        public async Task<ActionResult<Transaction>> MakeTransaction(Guid senderCardID, Guid receiverCardID, double sum)
+        {
+            var senderCard = await _context.Cards.FindAsync(senderCardID);
+            var receiverCard = await _context.Cards.FindAsync(receiverCardID);
+            Transaction transaction = new Transaction();
+            transaction.Id = senderCardID;
+            transaction.CardSenderID = senderCardID;
+            transaction.CardReceiverID = receiverCardID;
+            transaction.TransactionDate = DateTime.Now;
+            transaction.Sum = sum;
+            if (senderCard.Balance >= transaction.Sum)
+            {
+                senderCard.Balance -= transaction.Sum;
+                _context.Cards.Update(senderCard);
+                receiverCard.Balance += transaction.Sum;
+                _context.Cards.Update(receiverCard);
+                await _context.Transaction.AddAsync(transaction);
+                await _context.SaveChangesAsync();
+                return transaction;
+            }
+            else
+            {
+                throw new NotImplementedException("Not enough money!!!");
+            }
+
         }
     }
 }

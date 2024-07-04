@@ -18,10 +18,17 @@ namespace ProjectBank.Controller.Controllers.CallMethods
             _context = context;
             this.methodsService = methodsSevice;
         }
-        [HttpGet("MakeTransaction{cardID},{sum}")]
+        [HttpGet("MakeTransaction/cardID={cardID}/sum={sum}")]
         public async Task<ActionResult<Account>> MakeTransaction(Guid cardID, double sum)
         {
             await methodsService.MakeTransaction(cardID, sum);
+            return Ok();
+        }
+
+        [HttpPut("makeTransaction/senderCardID={senderCardID}/receiverCardID={receiverCardID}/sum={sum}")]
+        public async Task<ActionResult<Account>> MakeTransaction(Guid senderCardID, Guid receiverCardID, double sum)
+        {
+            await methodsService.MakeTransaction(senderCardID, receiverCardID, sum);
             return Ok();
         }
     }

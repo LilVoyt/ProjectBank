@@ -7,7 +7,6 @@ namespace ProjectBank.Entities
         [Key]
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public double Balance { get; set; }
         public Guid EmployeeID { get; set; }
         public Guid CustomerID { get; set; }
         public virtual Customer Customer { get; set; }
