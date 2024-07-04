@@ -53,13 +53,26 @@ namespace ProjectBank.Controller.Services
             {
                 return null;
             }
+
+            if (string.IsNullOrWhiteSpace(account.Name))
+            {
+                throw new ArgumentException("Invalid account details");
+            }
+
+            var existingAccount = await _context.Accounts.SingleOrDefaultAsync(a => a.Name == account.Name);
+            if (existingAccount != null)
+            {
+                throw new InvalidOperationException("Account with this name already exists");
+            }
+
             var res = MapRequestToAccount(account);
 
-            _context.Accounts.AddAsync(res);
+            await _context.Accounts.AddAsync(res);
             await _context.SaveChangesAsync();
 
             return res;
         }
+
 
         public async Task<Guid> DeleteAccount(Guid id)
         {

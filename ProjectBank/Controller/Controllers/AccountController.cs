@@ -39,7 +39,7 @@ namespace ProjectBank.Controller.Controllers
         }
 
         [HttpPost("AddAccount")]
-        public async Task<ActionResult<Account>> AddAccount(AccountRequestModel account) //тут
+        public async Task<ActionResult<Account>> AddAccount([FromBody] AccountRequestModel account)
         {
             try
             {
@@ -49,6 +49,14 @@ namespace ProjectBank.Controller.Controllers
             catch (ArgumentNullException ex)
             {
                 return BadRequest(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
             }
             catch (Exception ex)
             {
