@@ -65,9 +65,15 @@ namespace ProjectBank.Controller.Services
                 throw new InvalidOperationException("Account with this name already exists");
             }
 
+            var existingAccount1 = await _context.Accounts.SingleOrDefaultAsync(a => a.CustomerID == account.CustomerID);
+            if (existingAccount1 != null)
+            {
+                throw new InvalidOperationException("Account with this customer already exists");
+            }
+
             var res = MapRequestToAccount(account);
 
-            await _context.Accounts.AddAsync(res);
+            await _context.Accounts.AddAsync(res); // here i need to add the Exceptions
             await _context.SaveChangesAsync();
 
             return res;

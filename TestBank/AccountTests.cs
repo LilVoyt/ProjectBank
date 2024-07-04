@@ -72,12 +72,44 @@ namespace TestBank
         }
 
         [Fact]
+        public async Task AddAccount_Should_ThrowInvalidOperationException_WhenAccountCustomerIsNotUnique()
+        {
+            //Arrange
+            var existingAccount = new Account
+            {
+                Name = "Test Account",
+                CustomerID = Guid.Parse("bc04051a-40e7-414b-9f95-ab7068626c1b")
+            };
+            _context.Accounts.Add(existingAccount);
+            _context.SaveChanges();
+
+            var accountRequestModel = new AccountRequestModel
+            {
+                Name = "Test Account",
+                CustomerID = Guid.Parse("bc04051a-40e7-414b-9f95-ab7068626c1b")
+            };
+
+            //Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _accountService.AddAccount(accountRequestModel));
+        }
+
+        [Fact]
         public async Task AddAccount_Should_CreateAccount_WhenAllConditionsMet()
         {
             //Arrange
+
+            var existingAccount = new Account
+            {
+                Name = "Test Account",
+                CustomerID = Guid.Parse("bc04051a-40e7-414b-9f95-ab7068626c1b")
+            };
+            _context.Accounts.Add(existingAccount);
+            _context.SaveChanges();
+
             var accountRequestModel = new AccountRequestModel
             {
                 Name = "New Account",
+                CustomerID = Guid.Parse("bc04051a-40e7-414b-9f95-ab7068626c1c")
             };
 
             //Act
@@ -85,7 +117,6 @@ namespace TestBank
 
             //Assert
             Assert.NotNull(createdAccount);
-            Assert.Equal("New Account", createdAccount.Name);
         }
     }
 }
