@@ -24,13 +24,13 @@ namespace ProjectBank.Controller.Services.MathodsServise
             Transaction transactions = new Transaction();
             transactions.Id = Guid.NewGuid();
             transactions.CardSenderID = cardID;
+            transactions.CardReceiverID = cardID;
             transactions.TransactionDate = DateTime.Now;
             transactions.Sum = sum;
             if (card.Balance >= transactions.Sum)
             {
                 card.Balance -= transactions.Sum;
                 _context.Cards.Update(card);
-                //await _context.SaveChangesAsync();
                 await _context.Transaction.AddAsync(transactions);
                 await _context.SaveChangesAsync();
                 return transactions;
