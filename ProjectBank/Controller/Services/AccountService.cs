@@ -15,6 +15,10 @@ namespace ProjectBank.Controller.Services
         Task<Account> AddAccount(AccountRequestModel account);
         Task<Guid> UpdateAccount(Guid id, AccountRequestModel account);
         Task<Guid> DeleteAccount(Guid id);
+        Task<bool> IsCustomerNotExists(Guid customerId);
+        Task<bool> IsEmployeeNotExists(Guid employeeId);
+        Task<bool> IsNotAlredyRegisteredCustomer(Guid customerId);
+        Task<bool> IsNameUnique(string name);
     }
 
     public class AccountService : IAccountService
@@ -73,7 +77,7 @@ namespace ProjectBank.Controller.Services
 
             var res = MapRequestToAccount(account);
 
-            await _context.Accounts.AddAsync(res); // here i need to add the Exceptions
+            await _context.Accounts.AddAsync(res); // here i need to add the Exceptions with db
             await _context.SaveChangesAsync();
 
             return res;
@@ -140,6 +144,27 @@ namespace ProjectBank.Controller.Services
             res.CustomerID = account.CustomerID;
 
             return res;
+        }
+
+        //validation
+        public async Task<bool> IsCustomerNotExists(Guid customerId)
+        {
+            return await _context.Customers.AnyAsync(e => e.Id == customerId);
+        }
+
+        public async Task<bool> IsEmployeeNotExists(Guid employeeId)
+        {
+            return await _context.Employees.AnyAsync(e => e.Id == employeeId);
+        }
+
+        public async Task<bool> IsNotAlredyRegisteredCustomer(Guid customerId)
+        {
+            return await _context.Accounts.AnyAsync(a => a.CustomerID == customerId);
+        }
+
+        public async Task<bool> IsNameUnique(string name)
+        {
+            return !await _context.Accounts.AnyAsync(a => a.Name == name);
         }
     }
 }

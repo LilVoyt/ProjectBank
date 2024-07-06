@@ -52,7 +52,7 @@ namespace ProjectBank.Controller.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(ex.Message);  
             }
             catch (InvalidOperationException ex)
             {
@@ -67,7 +67,7 @@ namespace ProjectBank.Controller.Controllers
         [HttpPut("UpdateAccount/{id}")]
         public async Task<IActionResult> UpdateAccount(Guid id, AccountRequestModel account) //Work
         {
-            if (id == Guid.Empty)
+            if (id == Guid.Empty)                       
             {
                 return BadRequest();
             }
