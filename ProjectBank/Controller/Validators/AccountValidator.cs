@@ -14,7 +14,8 @@ namespace ProjectBank.Controller.Validators
         {
             _validationService = validationService;
 
-            RuleFor(a => a.Name).NotEmpty()
+            RuleFor(a => a.Name)
+                .NotEmpty()
                 .MaximumLength(50)
                 .MustAsync(IsNameUnique).WithMessage("Name is used before (it must be unique)!");
             RuleFor(a => a.EmployeeID)
