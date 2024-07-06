@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjectBank.Data;
 using ProjectBank.Entities;
 using ProjectBank.Models;
 using System.Net;
+using System.Threading;
 
 namespace ProjectBank.Controller.Services
 {
@@ -15,19 +17,17 @@ namespace ProjectBank.Controller.Services
         Task<Account> AddAccount(AccountRequestModel account);
         Task<Guid> UpdateAccount(Guid id, AccountRequestModel account);
         Task<Guid> DeleteAccount(Guid id);
-        Task<bool> IsCustomerNotExists(Guid customerId);
-        Task<bool> IsEmployeeNotExists(Guid employeeId);
-        Task<bool> IsNotAlredyRegisteredCustomer(Guid customerId);
-        Task<bool> IsNameUnique(string name);
     }
 
     public class AccountService : IAccountService
     {
         private readonly DataContext _context;
+        private readonly IValidator<Account> _validator;
 
-        public AccountService(DataContext context)
+        public AccountService(DataContext context, IValidator<Account> validator)
         {
             _context = context;
+            _validator = validator;
         }
 
         public async Task<ActionResult<List<Account>>> GetAllAccount()
@@ -53,31 +53,17 @@ namespace ProjectBank.Controller.Services
 
         public async Task<Account> AddAccount(AccountRequestModel account)
         {
-            if (account == null)
-            {
-                return null;
-            }
-
-            if (string.IsNullOrWhiteSpace(account.Name))
-            {
-                throw new ArgumentException("Invalid account details");
-            }
-
-            var existingAccount = await _context.Accounts.SingleOrDefaultAsync(a => a.Name == account.Name);
-            if (existingAccount != null)
-            {
-                throw new InvalidOperationException("Account with this name already exists");
-            }
-
-            var existingAccount1 = await _context.Accounts.SingleOrDefaultAsync(a => a.CustomerID == account.CustomerID);
-            if (existingAccount1 != null)
-            {
-                throw new InvalidOperationException("Account with this customer already exists");
-            }
-
             var res = MapRequestToAccount(account);
 
-            await _context.Accounts.AddAsync(res); // here i need to add the Exceptions with db
+            var validationResult = await _validator.ValidateAsync(res);
+
+            if (!validationResult.IsValid)
+            {
+                var errorMessages = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+                throw new Exception(errorMessages);
+            }
+
+            await _context.Accounts.AddAsync(res);
             await _context.SaveChangesAsync();
 
             return res;
@@ -146,25 +132,5 @@ namespace ProjectBank.Controller.Services
             return res;
         }
 
-        //validation
-        public async Task<bool> IsCustomerNotExists(Guid customerId)
-        {
-            return await _context.Customers.AnyAsync(e => e.Id == customerId);
-        }
-
-        public async Task<bool> IsEmployeeNotExists(Guid employeeId)
-        {
-            return await _context.Employees.AnyAsync(e => e.Id == employeeId);
-        }
-
-        public async Task<bool> IsNotAlredyRegisteredCustomer(Guid customerId)
-        {
-            return await _context.Accounts.AnyAsync(a => a.CustomerID == customerId);
-        }
-
-        public async Task<bool> IsNameUnique(string name)
-        {
-            return !await _context.Accounts.AnyAsync(a => a.Name == name);
-        }
     }
 }

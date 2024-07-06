@@ -22,7 +22,7 @@ namespace TestBank
                 .Options;
 
             _context = new DataContext(options);
-            _accountService = new AccountService(_context);
+            _accountService = new AccountService(_context, );
         }
 
         [Fact]
