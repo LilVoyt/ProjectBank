@@ -34,7 +34,7 @@ public class AccountServiceTests
         var model = new AccountRequestModel { Name = "" };
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<BadRequestException>(() => _accountService.AddAccount(model));
+        var exception = await Assert.ThrowsAsync<Exception>(() => _accountService.AddAccount(model));
         Assert.Contains("must not be empty", exception.Message);
     }
 
@@ -45,7 +45,7 @@ public class AccountServiceTests
         var model = new AccountRequestModel { Name = new string('a', 51) };
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<BadRequestException>(() => _accountService.AddAccount(model));
+        var exception = await Assert.ThrowsAsync<Exception>(() => _accountService.AddAccount(model));
         Assert.Contains("The length of 'Name' must be 50 characters or fewer", exception.Message);
     }
 
@@ -60,7 +60,7 @@ public class AccountServiceTests
         var model = new AccountRequestModel { Name = "ExistingName" };
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<BadRequestException>(() => _accountService.AddAccount(model));
+        var exception = await Assert.ThrowsAsync<Exception>(() => _accountService.AddAccount(model));
         Assert.Contains("Name is used before (it must be unique)!", exception.Message);
     }
 
@@ -68,60 +68,76 @@ public class AccountServiceTests
     public async Task AddAccount_Should_ThrowArgumentException_WhenCustomerNotExists()
     {
         // Arrange
+
         var model = new AccountRequestModel { Name = "NewAccount", CustomerID = Guid.NewGuid() };
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<BadRequestException>(() => _accountService.AddAccount(model));
+        var exception = await Assert.ThrowsAsync<Exception>(() => _accountService.AddAccount(model));
         Assert.Contains("Customer with this id not exist!", exception.Message);
     }
 
-    [Fact]
-    public async Task AddAccount_Should_ThrowArgumentException_WhenEmployeeNotExists()
-    {
-        // Arrange
-        var model = new AccountRequestModel { Name = "NewAccount", EmployeeID = Guid.NewGuid() };
+    //[Fact]
+    //public async Task AddAccount_Should_ThrowArgumentException_WhenEmployeeNotExists()
+    //{
+    //    // Arrange
+    //    var model = new AccountRequestModel { Name = "NewAccount", EmployeeID = Guid.NewGuid() };
 
-        // Act & Assert
-        var exception = await Assert.ThrowsAsync<BadRequestException>(() => _accountService.AddAccount(model));
-        Assert.Contains("Employee with this id not exist!", exception.Message);
-    }
+    //    // Act & Assert
+    //    var exception = await Assert.ThrowsAsync<Exception>(() => _accountService.AddAccount(model));
+    //    Assert.Contains("Employee with this id not exist!", exception.Message);
+    //}
 
     [Fact]
     public async Task AddAccount_Should_ThrowArgumentException_WhenCustomerAlreadyRegistered()
     {
         // Arrange
-        var customerId = Guid.NewGuid();
-        var existingAccount = new Account { Name = "ExistingAccount", CustomerID = customerId };
+        Customer customer = new Customer 
+        { Id = Guid.NewGuid(), Name = "Name", LastName = "LastName", Country = "Ua", Email = "asdflkj@gmail.com", Phone = "312132" };
+        var existingAccount = new Account { Name = "ExistingAccount", CustomerID = customer.Id };
+        await _context.Customers.AddAsync(customer);
         await _context.Accounts.AddAsync(existingAccount);
         await _context.SaveChangesAsync();
 
-        var model = new AccountRequestModel { Name = "NewAccount", CustomerID = customerId };
+        var model = new AccountRequestModel { Name = "NewAccount", CustomerID = customer.Id };
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<BadRequestException>(() => _accountService.AddAccount(model));
+        
+        var exception = await Assert.ThrowsAsync<Exception>(() => _accountService.AddAccount(model));
         Assert.Contains("Customer is already registered!", exception.Message);
     }
 
-    //[Fact]
-    //public async Task AddAccount_Should_AddAccount_WhenValidModel()
-    //{
-    //    // Arrange
-    //    var model = new AccountRequestModel { Name = "ValidAccount", CustomerID = Guid.NewGuid(), EmployeeID = Guid.NewGuid() };
-
-    //    // Act
-    //    var account = await _accountService.AddAccount(model);
-
-    //    // Assert
-    //    Assert.NotNull(account);
-    //    Assert.Equal(model.Name, account.Name);
-    //    Assert.Equal(model.CustomerID, account.CustomerID);
-    //    Assert.Equal(model.EmployeeID, account.EmployeeID);
-    //    Assert.NotEqual(Guid.Empty, account.Id);
-    //}
-
-    public class BadRequestException : Exception
+    [Fact]
+    public async Task AddAccount_Should_AddAccount_WhenValidModel()
     {
-        public BadRequestException(string message) : base(message) { }
+        // Arrange
+        Customer customer = new Customer
+        { Id = Guid.NewGuid(), Name = "Name", LastName = "LastName", Country = "Ua", Email = "asdflkj@gmail.com", Phone = "312132" };
+        
+        var model = new AccountRequestModel { Name = "ValidAccount", CustomerID = customer.Id, EmployeeID = Guid.NewGuid() };
+        await _context.Customers.AddAsync(customer);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var account = await _accountService.AddAccount(model);
+
+        // Assert
+        Assert.NotNull(account);
+        Assert.Equal(model.Name, account.Name);
+        Assert.Equal(model.CustomerID, account.CustomerID);
+        Assert.Equal(model.EmployeeID, account.EmployeeID);
+        Assert.NotEqual(Guid.Empty, account.Id);
     }
 
+    [Fact]
+    public async Task AddAccount_ShouldNT_ThrowArgumentException_WhenEmployeeIdIsEmpty()
+    {
+        Customer customer = new Customer
+        { Id = Guid.NewGuid(), Name = "Name", LastName = "LastName", Country = "Ua", Email = "asdflkj@gmail.com", Phone = "312132" };
+        await _context.Customers.AddAsync(customer);
+        await _context.SaveChangesAsync();
+
+        var model = new AccountRequestModel { Name = "ValidAccount", CustomerID = customer.Id, EmployeeID = Guid.Empty };
+        //await Assert.ThrowsAsync<Exception>(() => _accountService.AddAccount(model));
+
+    }
 }

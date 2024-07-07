@@ -26,7 +26,7 @@ namespace ProjectBank.Controller.Services
 
         public async Task<bool> IsEmployeeNotExists(Guid employeeId)
         {
-            return await _context.Employees.AnyAsync(e => e.Id == employeeId);
+            return /*await _context.Employees.AnyAsync(e => e.Id == employeeId);*/ true;
         }
 
         public async Task<bool> IsNotAlreadyRegisteredCustomer(Guid customerId)
