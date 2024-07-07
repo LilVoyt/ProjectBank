@@ -21,7 +21,7 @@ namespace ProjectBank.Controller.Services.MathodsServise
 
         public async Task<ActionResult<Transaction>> MakeTransaction(Guid cardID, double sum)
         {
-            var card = await _context.Cards.FindAsync(cardID);
+            var card = await _context.Card.FindAsync(cardID);
             Transaction transactions = new Transaction();
             transactions.Id = Guid.NewGuid();
             transactions.CardSenderID = cardID;
@@ -31,7 +31,7 @@ namespace ProjectBank.Controller.Services.MathodsServise
             if (card.Balance >= transactions.Sum)
             {
                 card.Balance -= transactions.Sum;
-                _context.Cards.Update(card);
+                _context.Card.Update(card);
                 await _context.Transaction.AddAsync(transactions);
                 await _context.SaveChangesAsync();
                 return transactions;
@@ -43,8 +43,8 @@ namespace ProjectBank.Controller.Services.MathodsServise
         }
         public async Task<ActionResult<Transaction>> MakeTransaction(Guid senderCardID, Guid receiverCardID, double sum)
         {
-            var senderCard = await _context.Cards.FindAsync(senderCardID);
-            var receiverCard = await _context.Cards.FindAsync(receiverCardID);
+            var senderCard = await _context.Card.FindAsync(senderCardID);
+            var receiverCard = await _context.Card.FindAsync(receiverCardID);
             Transaction transaction = new Transaction();
             transaction.Id = senderCardID;
             transaction.CardSenderID = senderCardID;
@@ -54,9 +54,9 @@ namespace ProjectBank.Controller.Services.MathodsServise
             if (senderCard.Balance >= transaction.Sum)
             {
                 senderCard.Balance -= transaction.Sum;
-                _context.Cards.Update(senderCard);
+                _context.Card.Update(senderCard);
                 receiverCard.Balance += transaction.Sum;
-                _context.Cards.Update(receiverCard);
+                _context.Card.Update(receiverCard);
                 await _context.Transaction.AddAsync(transaction);
                 await _context.SaveChangesAsync();
                 return transaction;

@@ -27,7 +27,7 @@ namespace ProjectBank.Controller.Services
 
         public async Task<ActionResult<List<Employee>>> GetAllEmployee()
         {
-            var employee = await _context.Employees.ToListAsync();
+            var employee = await _context.Employee.ToListAsync();
 
             return employee;
         }
@@ -35,7 +35,7 @@ namespace ProjectBank.Controller.Services
 
         public async Task<EmployeeRequestModel> GetEmployee(Guid id)
         {
-            var employee = await _context.Employees.FindAsync(id);
+            var employee = await _context.Employee.FindAsync(id);
 
             if (employee == null)
             {
@@ -55,7 +55,7 @@ namespace ProjectBank.Controller.Services
             }
             var res = MapRequestToEmployee(employee);
 
-            _context.Employees.AddAsync(res);
+            _context.Employee.AddAsync(res);
             await _context.SaveChangesAsync();
 
             return res;
@@ -64,13 +64,13 @@ namespace ProjectBank.Controller.Services
 
         public async Task<Guid> DeleteEmployee(Guid id)
         {
-            var employee = await _context.Employees.FindAsync(id);
+            var employee = await _context.Employee.FindAsync(id);
             if (employee == null)
             {
                 return Guid.Empty;
             }
 
-            _context.Employees.Remove(employee);
+            _context.Employee.Remove(employee);
             await _context.SaveChangesAsync();
 
             return id;
@@ -79,13 +79,13 @@ namespace ProjectBank.Controller.Services
 
         public async Task<Guid> UpdateEmployee(Guid id, EmployeeRequestModel requestModel)//need changes
         {
-            var employee = await _context.Employees.FindAsync(id);
+            var employee = await _context.Employee.FindAsync(id);
             if (employee == null)
             {
                 return Guid.Empty;
             }
             employee = MapRequestToSet(employee, requestModel);
-            _context.Employees.Update(employee);
+            _context.Employee.Update(employee);
             await _context.SaveChangesAsync();
 
             return id;

@@ -28,7 +28,7 @@ namespace ProjectBank.Controller.Services
 
         public async Task<ActionResult<List<Customer>>> GetAllCustomers()
         {
-            var customers = await _context.Customers.ToListAsync();
+            var customers = await _context.Customer.ToListAsync();
 
             return customers;
         }
@@ -36,7 +36,7 @@ namespace ProjectBank.Controller.Services
 
         public async Task<CustomerRequestModel> GetCustomer(Guid id)
         {
-            var customer = await _context.Customers.FindAsync(id);
+            var customer = await _context.Customer.FindAsync(id);
 
             if (customer == null)
             {
@@ -56,7 +56,7 @@ namespace ProjectBank.Controller.Services
             }
             var res = MapRequestToCustomer(customer);
 
-            await _context.Customers.AddAsync(res);
+            await _context.Customer.AddAsync(res);
             await _context.SaveChangesAsync();
 
             return res;
@@ -65,13 +65,13 @@ namespace ProjectBank.Controller.Services
 
         public async Task<Guid> DeleteCustomer(Guid id)
         {
-            var account = await _context.Customers.FindAsync(id);
+            var account = await _context.Customer.FindAsync(id);
             if (account == null)
             {
                 return Guid.Empty;
             }
 
-            _context.Customers.Remove(account);
+            _context.Customer.Remove(account);
             await _context.SaveChangesAsync();
 
             return id;
@@ -80,13 +80,13 @@ namespace ProjectBank.Controller.Services
 
         public async Task<Guid> UpdateCustomer(Guid id, CustomerRequestModel requestModel)//need changes
         {
-            var account = await _context.Customers.FindAsync(id);
+            var account = await _context.Customer.FindAsync(id);
             if (account == null)
             {
                 return Guid.Empty;
             }
             account = MapRequestToSet(account, requestModel);
-            _context.Customers.Update(account);
+            _context.Customer.Update(account);
             await _context.SaveChangesAsync();
 
             return id;

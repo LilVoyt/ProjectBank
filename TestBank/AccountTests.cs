@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ProjectBank.Data;
 using ProjectBank.Models;
+using ProjectBank.Controller.Services.Mappers;
 
 public class AccountServiceTests
 {
@@ -24,7 +25,8 @@ public class AccountServiceTests
 
         var validationService = new ValidationService(_context);
         _validator = new AccountValidator(validationService);
-        _accountService = new AccountService(_context, _validator);
+        var _accountMapper = new AccountMapper();
+        _accountService = new AccountService(_context, _validator, _accountMapper);
     }
 
     [Fact]
@@ -54,7 +56,7 @@ public class AccountServiceTests
     {
         // Arrange
         var existingAccount = new Account { Name = "ExistingName" };
-        await _context.Accounts.AddAsync(existingAccount);
+        await _context.Account.AddAsync(existingAccount);
         await _context.SaveChangesAsync();
 
         var model = new AccountRequestModel { Name = "ExistingName" };
@@ -94,8 +96,8 @@ public class AccountServiceTests
         Customer customer = new Customer 
         { Id = Guid.NewGuid(), Name = "Name", LastName = "LastName", Country = "Ua", Email = "asdflkj@gmail.com", Phone = "312132" };
         var existingAccount = new Account { Name = "ExistingAccount", CustomerID = customer.Id };
-        await _context.Customers.AddAsync(customer);
-        await _context.Accounts.AddAsync(existingAccount);
+        await _context.Customer.AddAsync(customer);
+        await _context.Account.AddAsync(existingAccount);
         await _context.SaveChangesAsync();
 
         var model = new AccountRequestModel { Name = "NewAccount", CustomerID = customer.Id };
@@ -114,7 +116,7 @@ public class AccountServiceTests
         { Id = Guid.NewGuid(), Name = "Name", LastName = "LastName", Country = "Ua", Email = "asdflkj@gmail.com", Phone = "312132" };
         
         var model = new AccountRequestModel { Name = "ValidAccount", CustomerID = customer.Id, EmployeeID = Guid.NewGuid() };
-        await _context.Customers.AddAsync(customer);
+        await _context.Customer.AddAsync(customer);
         await _context.SaveChangesAsync();
 
         // Act
@@ -133,7 +135,7 @@ public class AccountServiceTests
     {
         Customer customer = new Customer
         { Id = Guid.NewGuid(), Name = "Name", LastName = "LastName", Country = "Ua", Email = "asdflkj@gmail.com", Phone = "312132" };
-        await _context.Customers.AddAsync(customer);
+        await _context.Customer.AddAsync(customer);
         await _context.SaveChangesAsync();
 
         var model = new AccountRequestModel { Name = "ValidAccount", CustomerID = customer.Id, EmployeeID = Guid.Empty };

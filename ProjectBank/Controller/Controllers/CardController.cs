@@ -30,7 +30,7 @@ namespace ProjectBank.Controller.Controllers
         [HttpGet("GetCard/{id}")]
         public async Task<ActionResult<Card>> GetCard(Guid id) //work
         {
-            var card = await _context.Cards.FindAsync(id);
+            var card = await _context.Card.FindAsync(id);
             if (card == null)
             {
                 return NotFound();

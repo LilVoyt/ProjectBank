@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProjectBank.Controller.Services;
-using ProjectBank.Data;
 using ProjectBank.Entities;
 using ProjectBank.Models;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ProjectBank.Controller.Controllers
 {
@@ -10,27 +12,24 @@ namespace ProjectBank.Controller.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly DataContext _context;
-        private readonly IAccountService accountService;
+        private readonly IAccountService _accountService;
 
-        public AccountController(DataContext context, IAccountService accountService)
+        public AccountController(IAccountService accountService)
         {
-            _context = context;
-            this.accountService = accountService;
+            _accountService = accountService;
         }
 
-        [HttpGet("GetAllAccount")]
-        public async Task<ActionResult<List<Account>>> GetAllAccount() //work
+        [HttpGet]
+        public async Task<ActionResult<List<Account>>> GetAllAccounts() // Get all accounts
         {
-            var account = await accountService.GetAllAccount();
-
-            return Ok(account);
+            var accounts = await _accountService.GetAllAccount();
+            return Ok(accounts);
         }
 
-        [HttpGet("GetAccount/{id}")]
-        public async Task<ActionResult<Account>> GetAccount(Guid id) //work
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Account>> GetAccount(Guid id) // Get account by ID
         {
-            var account = await _context.Accounts.FindAsync(id);
+            var account = await _accountService.GetAccount(id);
             if (account == null)
             {
                 return NotFound();
@@ -38,25 +37,13 @@ namespace ProjectBank.Controller.Controllers
             return Ok(account);
         }
 
-        [HttpPost("AddAccount")]
-        public async Task<ActionResult<Account>> AddAccount([FromBody] AccountRequestModel account)
+        [HttpPost]
+        public async Task<ActionResult<Account>> AddAccount(AccountRequestModel account)
         {
             try
             {
-                var createdAccount = await accountService.AddAccount(account);
-                return Ok(createdAccount);
-            }
-            catch (ArgumentNullException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);  
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Conflict(ex.Message);
+                var createdAccount = await _accountService.AddAccount(account);
+                return CreatedAtAction(nameof(GetAccount), new { id = createdAccount.Id }, createdAccount);
             }
             catch (Exception ex)
             {
@@ -64,27 +51,34 @@ namespace ProjectBank.Controller.Controllers
             }
         }
 
-        [HttpPut("UpdateAccount/{id}")]
-        public async Task<IActionResult> UpdateAccount(Guid id, AccountRequestModel account) //Work
-        {
-            if (id == Guid.Empty)                       
-            {
-                return BadRequest();
-            }
-            await accountService.UpdateAccount(id, account);
-            return Ok(id);
-        }
-
-        [HttpDelete("DeleteAccount/{id}")]
-        public async Task<IActionResult> DeleteAccount(Guid id) //work
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAccount(Guid id, AccountRequestModel account) // Update account by ID
         {
             if (id == Guid.Empty)
             {
                 return BadRequest();
             }
-            await accountService.DeleteAccount(id);
-            return NoContent();
+            var result = await _accountService.UpdateAccount(id, account);
+            if (result == Guid.Empty)
+            {
+                return NotFound();
+            }
+            return Ok(result);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAccount(Guid id) // Delete account by ID
+        {
+            if (id == Guid.Empty)
+            {
+                return BadRequest();
+            }
+            var result = await _accountService.DeleteAccount(id);
+            if (result == Guid.Empty)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
     }
 }

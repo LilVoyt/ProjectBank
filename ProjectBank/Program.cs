@@ -2,6 +2,7 @@
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using ProjectBank.Controller.Services;
+using ProjectBank.Controller.Services.Mappers;
 using ProjectBank.Controller.Services.MathodsServise;
 using ProjectBank.Controller.Validators;
 using ProjectBank.Data;
@@ -26,6 +27,8 @@ builder.Services.AddScoped<IValidationService, ValidationService>();
 
 builder.Services.AddScoped<AbstractValidator<Account>, AccountValidator>();
 builder.Services.AddScoped<IValidator<Account>, AccountValidator>();
+
+builder.Services.AddScoped<AccountMapper>();
 
 
 //Here changes

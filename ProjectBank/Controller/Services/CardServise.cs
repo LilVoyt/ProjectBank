@@ -30,7 +30,7 @@ namespace ProjectBank.Controller.Services
             }
             var res = MapRequestToCard(card);
 
-            _context.Cards.AddAsync(res);
+            _context.Card.AddAsync(res);
             await _context.SaveChangesAsync();
 
             return res;
@@ -38,7 +38,7 @@ namespace ProjectBank.Controller.Services
 
         async Task<Guid> ICardService.DeleteCard(Guid id)
         {
-            var card = await _context.Cards.FindAsync(id);
+            var card = await _context.Card.FindAsync(id);
             if (card == null)
             {
                 return Guid.Empty;
@@ -46,7 +46,7 @@ namespace ProjectBank.Controller.Services
 
             card.AccountID = Guid.Empty;
 
-            _context.Cards.Remove(card);
+            _context.Card.Remove(card);
             await _context.SaveChangesAsync();
 
             return id;
@@ -54,14 +54,14 @@ namespace ProjectBank.Controller.Services
 
         async Task<ActionResult<List<Card>>> ICardService.GetAllCard()
         {
-            var card = await _context.Cards.ToListAsync();
+            var card = await _context.Card.ToListAsync();
 
             return card;
         }
 
         async Task<CardRequestModel> ICardService.GetCard(Guid id)
         {
-            var card = await _context.Cards.FindAsync(id);
+            var card = await _context.Card.FindAsync(id);
 
             if (card == null)
             {
@@ -74,13 +74,13 @@ namespace ProjectBank.Controller.Services
 
         async Task<Guid> ICardService.UpdateCard(Guid id, CardRequestModel requestModel)
         {
-            var card = await _context.Cards.FindAsync(id);
+            var card = await _context.Card.FindAsync(id);
             if (card == null)
             {
                 return Guid.Empty;
             }
             card = MapRequestToSet(card, requestModel);
-            _context.Cards.Update(card);
+            _context.Card.Update(card);
             await _context.SaveChangesAsync();
 
             return id;

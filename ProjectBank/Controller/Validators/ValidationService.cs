@@ -21,7 +21,7 @@ namespace ProjectBank.Controller.Services
 
         public async Task<bool> IsCustomerNotExists(Guid customerId)
         {
-            return await _context.Customers.AnyAsync(e => e.Id == customerId);
+            return await _context.Customer.AnyAsync(e => e.Id == customerId);
         }
 
         public async Task<bool> IsEmployeeNotExists(Guid employeeId)
@@ -31,12 +31,12 @@ namespace ProjectBank.Controller.Services
 
         public async Task<bool> IsNotAlreadyRegisteredCustomer(Guid customerId)
         {
-            return !await _context.Accounts.AnyAsync(a => a.CustomerID == customerId);
+            return !await _context.Account.AnyAsync(a => a.CustomerID == customerId);
         }
 
         public async Task<bool> IsNameUnique(string name)
         {
-            return !await _context.Accounts.AnyAsync(a => a.Name == name);
+            return !await _context.Account.AnyAsync(a => a.Name == name);
         }
     }
 
