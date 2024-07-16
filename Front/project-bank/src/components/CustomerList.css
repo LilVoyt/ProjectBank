@@ -1,0 +1,21 @@
+.customer-list {
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .customer-list h2 {
+    margin-bottom: 20px;
+  }
+  
+  .customer-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .customer-list li {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+  }
+  

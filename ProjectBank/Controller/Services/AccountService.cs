@@ -59,7 +59,7 @@ namespace ProjectBank.Controller.Services
             if (!validationResult.IsValid)
             {
                 var errorMessages = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
-                throw new Exception(errorMessages);
+                throw new ValidationException(errorMessages);
             }
 
             await _context.Account.AddAsync(res);

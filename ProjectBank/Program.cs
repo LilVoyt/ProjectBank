@@ -13,8 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers()
-    .AddFluentValidation(v => v.RegisterValidatorsFromAssemblyContaining<Account>()); //and else
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+    .AddFluentValidation(v => v.RegisterValidatorsFromAssemblyContaining<Account>());
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
@@ -29,6 +30,17 @@ builder.Services.AddScoped<AbstractValidator<Account>, AccountValidator>();
 builder.Services.AddScoped<IValidator<Account>, AccountValidator>();
 
 builder.Services.AddScoped<AccountMapper>();
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:3000");
+        policy.AllowAnyHeader();
+        policy.AllowAnyMethod();
+    });
+});
 
 
 //Here changes

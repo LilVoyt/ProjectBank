@@ -4,7 +4,9 @@ using ProjectBank.Entities;
 using ProjectBank.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using FluentValidation;
 
 namespace ProjectBank.Controller.Controllers
 {
@@ -38,12 +40,16 @@ namespace ProjectBank.Controller.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Account>> AddAccount(AccountRequestModel account)
+        public async Task<ActionResult<Account>> AddAccount(AccountRequestModel account) //from body
         {
             try
             {
                 var createdAccount = await _accountService.AddAccount(account);
                 return CreatedAtAction(nameof(GetAccount), new { id = createdAccount.Id }, createdAccount);
+            }
+            catch(FluentValidation.ValidationException vex)
+            {
+                return BadRequest(vex.Message);
             }
             catch (Exception ex)
             {

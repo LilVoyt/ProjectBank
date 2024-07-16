@@ -1,0 +1,101 @@
+import React, { useState } from 'react';
+import './RegistrationForm';
+
+const RegistrationForm = ({ onRegister }) => {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    country: '',
+    phoneNumber: '',
+    email: '',
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onRegister(formData);
+    setFormData({
+      firstName: '',
+      lastName: '',
+      country: '',
+      phoneNumber: '',
+      email: '',
+    });
+  };
+
+  return (
+    <form className='registration-form' onSubmit={handleSubmit}>
+      <h2>Register</h2>
+      <div>
+        <input
+          type="text"
+          name="NickName"
+          value={formData.firstName}
+          onChange={handleChange}
+          placeholder="Nick Name"
+          required
+        />
+      </div>
+      <div>
+        <input
+          type="text"
+          name="firstName"
+          value={formData.firstName}
+          onChange={handleChange}
+          placeholder="First Name"
+          required
+        />
+      </div>
+      <div>
+        <input
+          type="text"
+          name="lastName"
+          value={formData.lastName}
+          onChange={handleChange}
+          placeholder="Last Name"
+          required
+        />
+      </div>
+      <div>
+        <input
+          type="text"
+          name="country"
+          value={formData.country}
+          onChange={handleChange}
+          placeholder="Country"
+          required
+        />
+      </div>
+      <div>
+        <input
+          type="text"
+          name="phoneNumber"
+          value={formData.phoneNumber}
+          onChange={handleChange}
+          placeholder="Phone Number"
+          required
+        />
+      </div>
+      <div>
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="Email"
+          required
+        />
+      </div>
+      <button type="submit">Register</button>
+    </form>
+  );
+};
+
+export default RegistrationForm;
