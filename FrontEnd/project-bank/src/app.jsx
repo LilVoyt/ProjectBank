@@ -1,10 +1,11 @@
-import './App.css';
-import RegistrationForm from './components/RegistrationForm';
+import { useEffect, useState } from 'preact/hooks'
+import './app.css'
+import ReagistationForm from './components/RegistrationForm'
 import CustomerList from './components/CustomerList';
 import { fetchCustomers } from './services/customers';
-import { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
 
-function App() {
+export function App() {
   const [customers, setCustomers] = useState([]);
 
   useEffect(() => {
@@ -15,15 +16,14 @@ function App() {
     }
 
     fetchData();
-  })
+  }, [])
+
   return (
     <section className='MainWindow'>
       <div className='RegAndList'>
-        <RegistrationForm></RegistrationForm>
-        <CustomerList customers = {customers}></CustomerList>
+        <ReagistationForm></ReagistationForm>
+        <CustomerList customers={customers}></CustomerList>
       </div>
     </section>
-  );
+  )
 }
-
-export default App;

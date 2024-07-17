@@ -8,7 +8,7 @@
 .RegAndList {
   display: flex;
   justify-content: space-around;
-  width: 800px;
+  width: 1000px;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 8px;

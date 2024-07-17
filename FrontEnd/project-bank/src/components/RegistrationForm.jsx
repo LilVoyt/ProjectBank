@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import './RegistrationForm';
+import { useState } from 'react';
+import './RegistrationForm.css';
 
 const RegistrationForm = ({ onRegister }) => {
   const [formData, setFormData] = useState({
+    nickName: '',
     firstName: '',
     lastName: '',
     country: '',
@@ -22,6 +23,7 @@ const RegistrationForm = ({ onRegister }) => {
     e.preventDefault();
     onRegister(formData);
     setFormData({
+      nickName: '',
       firstName: '',
       lastName: '',
       country: '',
@@ -36,8 +38,8 @@ const RegistrationForm = ({ onRegister }) => {
       <div>
         <input
           type="text"
-          name="NickName"
-          value={formData.firstName}
+          name="nickName"
+          value={formData.nickName}
           onChange={handleChange}
           placeholder="Nick Name"
           required
