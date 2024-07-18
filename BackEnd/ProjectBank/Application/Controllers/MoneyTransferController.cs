@@ -1,22 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProjectBank.Controller.Services;
-using ProjectBank.Controller.Services.MathodsServise;
 using ProjectBank.Data;
 using ProjectBank.Entities;
 
-namespace ProjectBank.Controller.Controllers.CallMethods
+namespace ProjectBank.Controller.Controllers
 {
     [Route("api/MakeTransactions")]
     [ApiController]
-    public class CallMethodsController : ControllerBase
+    public class MoneyTransferController : ControllerBase
     {
         private readonly DataContext _context;
-        private readonly IMethodsSevice methodsService;
+        private readonly IMoneyTransferService methodsService;
 
-        public CallMethodsController(DataContext context, IMethodsSevice methodsSevice)
+        public MoneyTransferController(DataContext context, IMoneyTransferService methodsSevice)
         {
             _context = context;
-            this.methodsService = methodsSevice;
+            methodsService = methodsSevice;
         }
         [HttpGet("MakeTransaction/cardID={cardID}/sum={sum}")]
         public async Task<ActionResult<Account>> MakeTransaction(Guid cardID, double sum)

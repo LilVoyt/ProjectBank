@@ -3,18 +3,18 @@ using ProjectBank.Data;
 using ProjectBank.Entities;
 using ProjectBank.Models;
 
-namespace ProjectBank.Controller.Services.MathodsServise
+namespace ProjectBank.Controller.Services
 {
-    public interface IMethodsSevice
+    public interface IMoneyTransferService
     {
         Task<ActionResult<Transaction>> MakeTransaction(Guid cardID, double sum);
         Task<ActionResult<Transaction>> MakeTransaction(Guid senderCardID, Guid receiverCardID, double sum);
     }
-    public class MethodsService : IMethodsSevice
+    public class MoneyTransferService : IMoneyTransferService
     {
         private readonly DataContext _context;
 
-        public MethodsService(DataContext context)
+        public MoneyTransferService(DataContext context)
         {
             _context = context;
         }

@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Azure.Core;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using ProjectBank.Controller.Services;
 using ProjectBank.Entities;
@@ -28,9 +29,9 @@ namespace ProjectBank.Controller.Validators
         {
             return await _validationService.IsCustomerNotExists(customerID);
         }
-        private async Task<bool> IsEmployeeNotExists(Guid employeeID, CancellationToken cancellationToken)
+        private async Task<bool> IsEmployeeNotExists(Guid? employeeID, CancellationToken cancellationToken)
         {
-            return await _validationService.IsEmployeeNotExists(employeeID);
+            return /*await _validationService.IsEmployeeNotExists(employeeID);*/true;
         }
         public async Task<bool> IsNotAlredyRegisteredCustomer(Guid customerId, CancellationToken cancellationToken)
         {

@@ -22,8 +22,8 @@ namespace ProjectBank.Data
                 entity.Property(b => b.CustomerID)
                   .IsRequired();
 
-                entity.Property(b => b.EmployeeID)
-                .IsRequired();
+                //entity.Property(b => b.EmployeeID)
+                //.IsRequired();
                     
                 entity.HasOne(b => b.Customer)
                 .WithOne(a => a.Account)

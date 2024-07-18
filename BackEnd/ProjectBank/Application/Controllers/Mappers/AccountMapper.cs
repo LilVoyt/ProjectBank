@@ -1,7 +1,7 @@
 ﻿using ProjectBank.Entities;
 using ProjectBank.Models;
 
-namespace ProjectBank.Controller.Services.Mappers
+namespace ProjectBank.Controller.Controllers.Mappers
 {
     public class AccountMapper
     {
@@ -18,7 +18,7 @@ namespace ProjectBank.Controller.Services.Mappers
 
         public AccountRequestModel MapRequestToDB(Account account)
         {
-            return new AccountRequestModel 
+            return new AccountRequestModel
             {
                 Name = account.Name,
                 EmployeeID = account.EmployeeID,

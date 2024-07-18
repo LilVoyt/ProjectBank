@@ -1,9 +1,8 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using ProjectBank.Controller.Controllers.Mappers;
 using ProjectBank.Controller.Services;
-using ProjectBank.Controller.Services.Mappers;
-using ProjectBank.Controller.Services.MathodsServise;
 using ProjectBank.Controller.Validators;
 using ProjectBank.Data;
 using ProjectBank.Entities;
@@ -23,7 +22,7 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ICardService, CardServise>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
-builder.Services.AddScoped<IMethodsSevice, MethodsService>();
+builder.Services.AddScoped<IMoneyTransferService, MoneyTransferService>();
 builder.Services.AddScoped<IValidationService, ValidationService>();
 
 builder.Services.AddScoped<AbstractValidator<Account>, AccountValidator>();
