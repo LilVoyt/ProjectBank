@@ -6,6 +6,7 @@ using ProjectBank.Controller.Controllers.Mappers;
 using ProjectBank.Data;
 using ProjectBank.Entities;
 using ProjectBank.Models;
+using System.Linq.Expressions;
 using System.Net;
 using System.Threading;
 
@@ -13,11 +14,10 @@ namespace ProjectBank.Controller.Services
 {
     public interface IAccountService
     {
-        Task<ActionResult<List<Account>>> GetAllAccount();
-        Task<AccountRequestModel> GetAccount(Guid id);
-        Task<Account> AddAccount(AccountRequestModel account);
-        Task<Guid> UpdateAccount(Guid id, AccountRequestModel account);
-        Task<Guid> DeleteAccount(Guid id);
+        Task<ActionResult<List<AccountRequestModel>>> Get(string? Search, string? SortItem, string? SortOrder);
+        Task<Account> Post(AccountRequestModel account);
+        Task<Guid> Update(Guid id, AccountRequestModel account);
+        Task<Guid> Delete(Guid id);
     }
 
     public class AccountService : IAccountService
@@ -33,27 +33,35 @@ namespace ProjectBank.Controller.Services
             _accountMapper = accountMapper;
         }
 
-        public async Task<ActionResult<List<Account>>> GetAllAccount()
+        public async Task<ActionResult<List<AccountRequestModel>>> Get(string? search, string? sortItem, string? sortOrder)
         {
-            var account = await _context.Account.ToListAsync();
-            return account;
-        }
+            IQueryable<Account> accounts = _context.Account;
 
-        public async Task<AccountRequestModel> GetAccount(Guid id)
-        {
-            var account = await _context.Account.FindAsync(id);
-            if (account == null)
+            if (!string.IsNullOrEmpty(search))
             {
-                return null;
+                accounts = accounts.Where(n => n.Name.ToLower().Contains(search.ToLower()));
             }
 
-            var res = _accountMapper.MapRequestToDB(account);
-            return res;
+            Expression<Func<Account, object>> selectorKey = sortItem?.ToLower() switch
+            {
+                "name" => account => account.Name,
+                _ => account => account.Id,
+            };
+
+            accounts = sortOrder?.ToLower() == "desc"
+                ? accounts.OrderByDescending(selectorKey)
+                : accounts.OrderBy(selectorKey);
+
+            List<Account> accountList = await accounts.ToListAsync();
+
+            List<AccountRequestModel> response = _accountMapper.GetRequestModels(accountList);
+
+            return response;
         }
 
-        public async Task<Account> AddAccount(AccountRequestModel account)
+        public async Task<Account> Post(AccountRequestModel account)
         {
-            var res = _accountMapper.MapRequestToAccount(account);
+            var res = _accountMapper.GetAccount(account);
 
             var validationResult = await _validator.ValidateAsync(res);
             if (!validationResult.IsValid)
@@ -67,7 +75,7 @@ namespace ProjectBank.Controller.Services
             return res;
         }
 
-        public async Task<Guid> DeleteAccount(Guid id)
+        public async Task<Guid> Delete(Guid id)
         {
             var account = await _context.Account.FindAsync(id);
             if (account == null)
@@ -82,7 +90,7 @@ namespace ProjectBank.Controller.Services
             return id;
         }
 
-        public async Task<Guid> UpdateAccount(Guid id, AccountRequestModel requestModel)
+        public async Task<Guid> Update(Guid id, AccountRequestModel requestModel)
         {
             var account = await _context.Account.FindAsync(id);
             if (account == null)
@@ -90,7 +98,7 @@ namespace ProjectBank.Controller.Services
                 return Guid.Empty;
             }
 
-            account = _accountMapper.MapRequestToSet(account, requestModel);
+            account = _accountMapper.PutAccountRequestModelInAccount(account, requestModel);
             _context.Account.Update(account);
             await _context.SaveChangesAsync();
             return id;

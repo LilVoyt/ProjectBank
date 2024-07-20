@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using FluentValidation;
+using Microsoft.Data.SqlClient;
 
 namespace ProjectBank.Controller.Controllers
 {
@@ -22,39 +23,17 @@ namespace ProjectBank.Controller.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Account>>> GetAllAccounts() // Get all accounts
+        public async Task<ActionResult<List<Account>>> Get(string? Search, string? SortItem, string? SortOrder) // Get all accounts
         {
-            var accounts = await _accountService.GetAllAccount();
+            var accounts = await _accountService.Get(Search, SortItem, SortOrder);
             return Ok(accounts);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Account>> GetAccount(Guid id) // Get account by ID
-        {
-            var account = await _accountService.GetAccount(id);
-            if (account == null)
-            {
-                return NotFound();
-            }
-            return Ok(account);
         }
 
         [HttpPost]
         public async Task<ActionResult<Account>> AddAccount(AccountRequestModel account) //from body
         {
-            try
-            {
-                var createdAccount = await _accountService.AddAccount(account);
-                return CreatedAtAction(nameof(GetAccount), new { id = createdAccount.Id }, createdAccount);
-            }
-            catch(FluentValidation.ValidationException vex)
-            {
-                return BadRequest(vex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            var createdAccount = await _accountService.Post(account);
+            return Ok(createdAccount);
         }
 
         [HttpPut("{id}")]
@@ -64,7 +43,7 @@ namespace ProjectBank.Controller.Controllers
             {
                 return BadRequest();
             }
-            var result = await _accountService.UpdateAccount(id, account);
+            var result = await _accountService.Update(id, account);
             if (result == Guid.Empty)
             {
                 return NotFound();
@@ -79,7 +58,7 @@ namespace ProjectBank.Controller.Controllers
             {
                 return BadRequest();
             }
-            var result = await _accountService.DeleteAccount(id);
+            var result = await _accountService.Delete(id);
             if (result == Guid.Empty)
             {
                 return NotFound();

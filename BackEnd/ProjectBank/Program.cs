@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using ProjectBank.Application.Controllers.Exceptions;
 using ProjectBank.Controller.Controllers.Mappers;
 using ProjectBank.Controller.Services;
 using ProjectBank.Controller.Validators;
@@ -9,11 +10,13 @@ using ProjectBank.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<CustomExceptionFilter>();
+});
 
 builder.Services.AddControllers()
     .AddFluentValidation(v => v.RegisterValidatorsFromAssemblyContaining<Account>());
-
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -31,6 +34,7 @@ builder.Services.AddScoped<IValidator<Account>, AccountValidator>();
 builder.Services.AddScoped<AccountMapper>();
 
 
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -42,7 +46,6 @@ builder.Services.AddCors(options =>
 });
 
 
-//Here changes
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -51,7 +54,6 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

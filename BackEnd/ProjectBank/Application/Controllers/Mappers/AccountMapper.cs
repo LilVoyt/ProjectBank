@@ -5,7 +5,7 @@ namespace ProjectBank.Controller.Controllers.Mappers
 {
     public class AccountMapper
     {
-        public Account MapRequestToAccount(AccountRequestModel requestModel)
+        public Account GetAccount(AccountRequestModel requestModel)
         {
             return new Account
             {
@@ -16,7 +16,7 @@ namespace ProjectBank.Controller.Controllers.Mappers
             };
         }
 
-        public AccountRequestModel MapRequestToDB(Account account)
+        public AccountRequestModel GetRequestModel(Account account)
         {
             return new AccountRequestModel
             {
@@ -26,7 +26,7 @@ namespace ProjectBank.Controller.Controllers.Mappers
             };
         }
 
-        public Account MapRequestToSet(Account account, AccountRequestModel requestModel)
+        public Account PutAccountRequestModelInAccount(Account account, AccountRequestModel requestModel)
         {
             account.Name = requestModel.Name;
             account.EmployeeID = requestModel.EmployeeID;
@@ -34,5 +34,11 @@ namespace ProjectBank.Controller.Controllers.Mappers
 
             return account;
         }
+
+        public List<AccountRequestModel> GetRequestModels(List<Account> accounts)
+        {
+            return accounts.Select(account => GetRequestModel(account)).ToList();
+        }
+
     }
 }
