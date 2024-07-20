@@ -17,6 +17,7 @@ namespace ProjectBank.Controller.Validators
 
             RuleFor(a => a.Name)
                 .NotEmpty()
+                .WithMessage("Name cannot be empty.")
                 .MaximumLength(50)
                 .MustAsync(IsNameUnique).WithMessage("Name is used before (it must be unique)!").WithErrorCode("404");
             RuleFor(a => a.EmployeeID)

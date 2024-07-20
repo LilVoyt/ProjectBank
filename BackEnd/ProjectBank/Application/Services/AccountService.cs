@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ProjectBank.Application.Services.Interfaces;
 using ProjectBank.Controller.Controllers.Mappers;
 using ProjectBank.Data;
 using ProjectBank.Entities;
@@ -12,14 +13,6 @@ using System.Threading;
 
 namespace ProjectBank.Controller.Services
 {
-    public interface IAccountService
-    {
-        Task<ActionResult<List<AccountRequestModel>>> Get(string? Search, string? SortItem, string? SortOrder);
-        Task<Account> Post(AccountRequestModel account);
-        Task<Guid> Update(Guid id, AccountRequestModel account);
-        Task<Guid> Delete(Guid id);
-    }
-
     public class AccountService : IAccountService
     {
         private readonly DataContext _context;
@@ -75,33 +68,40 @@ namespace ProjectBank.Controller.Services
             return res;
         }
 
-        public async Task<Guid> Delete(Guid id)
+        public async Task<Account> Update(Guid id, AccountRequestModel requestModel)
         {
             var account = await _context.Account.FindAsync(id);
             if (account == null)
             {
-                return Guid.Empty;
+                throw new KeyNotFoundException($"Account with ID {id} not found.");
+            }
+
+            account = _accountMapper.PutAccountRequestModelInAccount(account, requestModel);
+            var validationResult = await _validator.ValidateAsync(account);
+            if (!validationResult.IsValid)
+            {
+                var errorMessages = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+                throw new ValidationException(errorMessages);
+            }
+
+            _context.Account.Update(account);
+            await _context.SaveChangesAsync();
+            return account;
+        }
+
+        public async Task<Account> Delete(Guid id)
+        {
+            var account = await _context.Account.FindAsync(id);
+            if (account == null)
+            {
+                throw new KeyNotFoundException($"Account with ID {id} not found.");
             }
 
             account.EmployeeID = Guid.Empty;
             account.CustomerID = Guid.Empty;
             _context.Account.Remove(account);
             await _context.SaveChangesAsync();
-            return id;
-        }
-
-        public async Task<Guid> Update(Guid id, AccountRequestModel requestModel)
-        {
-            var account = await _context.Account.FindAsync(id);
-            if (account == null)
-            {
-                return Guid.Empty;
-            }
-
-            account = _accountMapper.PutAccountRequestModelInAccount(account, requestModel);
-            _context.Account.Update(account);
-            await _context.SaveChangesAsync();
-            return id;
+            return account;
         }
     }
 }

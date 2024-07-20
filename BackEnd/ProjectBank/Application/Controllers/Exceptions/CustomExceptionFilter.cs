@@ -19,6 +19,12 @@ namespace ProjectBank.Application.Controllers.Exceptions
                 context.Result = new UnauthorizedObjectResult(errorResponse);
                 context.ExceptionHandled = true;
             }
+            else if (context.Exception is KeyNotFoundException knf)
+            {
+                var errorResponse = new { Message = "Not Found", Details = knf.Message };
+                context.Result = new NotFoundObjectResult(errorResponse);
+                context.ExceptionHandled = true;
+            }
             //else if (context.Exception is ForbiddenAccessException fax)
             //{
             //    var errorResponse = new { Message = "Forbidden", Details = fax.Message };

@@ -2,6 +2,7 @@
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using ProjectBank.Application.Controllers.Exceptions;
+using ProjectBank.Application.Services.Interfaces;
 using ProjectBank.Controller.Controllers.Mappers;
 using ProjectBank.Controller.Services;
 using ProjectBank.Controller.Validators;

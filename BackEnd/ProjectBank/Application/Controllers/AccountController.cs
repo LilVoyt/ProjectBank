@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ProjectBank.Controller.Services;
+using ProjectBank.Application.Services.Interfaces;
 using ProjectBank.Entities;
 using ProjectBank.Models;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using FluentValidation;
-using Microsoft.Data.SqlClient;
 
 namespace ProjectBank.Controller.Controllers
 {
@@ -23,46 +20,30 @@ namespace ProjectBank.Controller.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Account>>> Get(string? Search, string? SortItem, string? SortOrder) // Get all accounts
+        public async Task<ActionResult<List<AccountRequestModel>>> Get(string? Search, string? SortItem, string? SortOrder)
         {
             var accounts = await _accountService.Get(Search, SortItem, SortOrder);
             return Ok(accounts);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Account>> AddAccount(AccountRequestModel account) //from body
+        public async Task<ActionResult<Account>> AddAccount(AccountRequestModel account)
         {
             var createdAccount = await _accountService.Post(account);
-            return Ok(createdAccount);
+            return CreatedAtAction(nameof(AddAccount), new { id = createdAccount.Id }, createdAccount);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAccount(Guid id, AccountRequestModel account) // Update account by ID
+        public async Task<IActionResult> UpdateAccount(Guid id, AccountRequestModel account)
         {
-            if (id == Guid.Empty)
-            {
-                return BadRequest();
-            }
             var result = await _accountService.Update(id, account);
-            if (result == Guid.Empty)
-            {
-                return NotFound();
-            }
             return Ok(result);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAccount(Guid id) // Delete account by ID
+        public async Task<IActionResult> DeleteAccount(Guid id)
         {
-            if (id == Guid.Empty)
-            {
-                return BadRequest();
-            }
-            var result = await _accountService.Delete(id);
-            if (result == Guid.Empty)
-            {
-                return NotFound();
-            }
+            await _accountService.Delete(id);
             return NoContent();
         }
     }
