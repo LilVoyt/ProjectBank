@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ProjectBank.Controller.Services;
+using ProjectBank.Application.Services.Interfaces;
 using ProjectBank.Data;
 using ProjectBank.Entities;
 using ProjectBank.Models;
@@ -34,7 +34,7 @@ namespace ProjectBank.Controller.Controllers
         {
             try
             {
-                var createdCustomer = await customerService.AddCustomer(customer);
+                var createdCustomer = await customerService.Add(customer);
                 return Ok(createdCustomer);
             }
             catch (ArgumentNullException ex)
@@ -55,7 +55,7 @@ namespace ProjectBank.Controller.Controllers
             {
                 return BadRequest();
             }
-            await customerService.DeleteCustomer(id);   
+            await customerService.Delete(id);   
             
             return NoContent();
         }
@@ -67,7 +67,7 @@ namespace ProjectBank.Controller.Controllers
             {
                 return BadRequest();
             }
-            await customerService.UpdateCustomer(id, customer);
+            await customerService.Update(id, customer);
             return Ok(id);
         }
 

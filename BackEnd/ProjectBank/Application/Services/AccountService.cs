@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjectBank.Application.Services.Interfaces;
-using ProjectBank.Controller.Controllers.Mappers;
+using ProjectBank.Application.Services.Mappers;
 using ProjectBank.Data;
 using ProjectBank.Entities;
 using ProjectBank.Models;

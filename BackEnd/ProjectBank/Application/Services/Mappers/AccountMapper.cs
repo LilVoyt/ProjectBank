@@ -1,7 +1,7 @@
 ﻿using ProjectBank.Entities;
 using ProjectBank.Models;
 
-namespace ProjectBank.Controller.Controllers.Mappers
+namespace ProjectBank.Application.Services.Mappers
 {
     public class AccountMapper
     {
