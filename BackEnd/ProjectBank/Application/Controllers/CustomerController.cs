@@ -21,28 +21,15 @@ namespace ProjectBank.Controller.Controllers
             this.customerService = customerService;
         }
 
-        [HttpGet("GetAllCustomers")]
-        public async Task<ActionResult<List<Customer>>> GetAllCustomers() //work
+        [HttpGet]
+        public async Task<ActionResult<List<Customer>>> GetAllCustomers()
         {
             var customers = await customerService.GetAllCustomers();
 
             return Ok(customers);
         }
 
-        [HttpGet("GetCustomer/{id}")]
-        public async Task<ActionResult<CustomerRequestModel>> GetCustomer(Guid id) //work
-        {
-
-            if (id == Guid.Empty)
-            {
-                return NotFound();
-            }
-            var customer = await customerService.GetCustomer(id);
-
-            return Ok(customer);
-        }
-
-        [HttpPost("AddCustomer")]
+        [HttpPost]
         public async Task<ActionResult<Customer>> AddCustomer(CustomerRequestModel customer)
         {
             try
@@ -61,7 +48,7 @@ namespace ProjectBank.Controller.Controllers
         }
 
 
-        [HttpDelete("DeleteCustomer/{id}")]
+        [HttpDelete]
         public async Task<IActionResult> DeleteCustomer(Guid id) //work
         {
             if (id == Guid.Empty)
@@ -73,7 +60,7 @@ namespace ProjectBank.Controller.Controllers
             return NoContent();
         }
 
-        [HttpPut("UpdateCustomer/{id}")]
+        [HttpPut]
         public async Task<IActionResult> UpdateCustomer(Guid id, CustomerRequestModel customer) //Work
         {
             if (id == Guid.Empty)

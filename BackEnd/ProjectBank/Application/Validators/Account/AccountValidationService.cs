@@ -1,20 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjectBank.Data;
+using ProjectBank.Entities;
 
-namespace ProjectBank.Controller.Services
+namespace ProjectBank.Application.Validators.Account
 {
-    public interface IValidationService
-    {
-        Task<bool> IsCustomerNotExists(Guid customerID);
-        Task<bool> IsEmployeeNotExists(Guid employeeID);
-        Task<bool> IsNotAlreadyRegisteredCustomer(Guid customerID);
-        Task<bool> IsNameUnique(string name);
-    }
-    public class ValidationService : IValidationService
+    public class AccountValidationService : IAccountValidationService
     {
         private readonly DataContext _context;
 
-        public ValidationService(DataContext context)
+        public AccountValidationService(DataContext context)
         {
             _context = context;
         }
@@ -24,9 +18,13 @@ namespace ProjectBank.Controller.Services
             return await _context.Customer.AnyAsync(e => e.Id == customerId);
         }
 
-        public async Task<bool> IsEmployeeNotExists(Guid employeeId)
+        public async Task<bool> IsEmployeeExistsOrNull(Guid? employeeId)
         {
-            return /*await _context.Employees.AnyAsync(e => e.Id == employeeId);*/ true;
+            if (employeeId == null)
+            {
+                return true;
+            }
+            return await _context.Employee.AnyAsync(e => e.Id == employeeId);
         }
 
         public async Task<bool> IsNotAlreadyRegisteredCustomer(Guid customerId)

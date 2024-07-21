@@ -1,18 +1,17 @@
 using FluentValidation.TestHelper;
 using Moq;
-using ProjectBank.Controller.Services;
-using ProjectBank.Controller.Validators;
+using ProjectBank.Application.Validators.Account;
 using ProjectBank.Entities;
 using Xunit;
 
 public class AccountValidatorTests
 {
-    private readonly Mock<IValidationService> _validationServiceMock;
+    private readonly Mock<IAccountValidationService> _validationServiceMock;
     private readonly AccountValidator _validator;
 
     public AccountValidatorTests()
     {
-        _validationServiceMock = new Mock<IValidationService>();
+        _validationServiceMock = new Mock<IAccountValidationService>();
         _validator = new AccountValidator(_validationServiceMock.Object);
     }
 
@@ -38,17 +37,30 @@ public class AccountValidatorTests
         result.ShouldHaveValidationErrorFor(a => a.Name).WithErrorMessage("Name is used before (it must be unique)!");
     }
 
-    //[Fact]
-    //public async Task Should_Have_Error_When_EmployeeID_Is_Not_Valid()
-    //{
-    //    _validationServiceMock.Setup(x => x.IsEmployeeNotExists(It.IsAny<Guid>())).ReturnsAsync(false);
+    [Fact]
+    public async Task Should_Have_Error_When_EmployeeID_Is_Not_Valid()
+    {
+        _validationServiceMock.Setup(x => x.IsEmployeeExistsOrNull(It.IsAny<Guid>())).ReturnsAsync(false);
 
-    //    var account = new Account { EmployeeID = Guid.NewGuid() };
+        var account = new Account { EmployeeID = Guid.NewGuid() };
 
-    //    var result = await _validator.TestValidateAsync(account);
+        var result = await _validator.TestValidateAsync(account);
 
-    //    result.ShouldHaveValidationErrorFor(a => a.EmployeeID).WithErrorMessage("Employee with this id not exist!");
-    //}
+        result.ShouldHaveValidationErrorFor(a => a.EmployeeID).WithErrorMessage("Employee with this id not exist!");
+    }
+
+    [Fact]
+    public async Task Should_Not_Have_Error_When_EmployeeID_Is_Null()
+    {
+        _validationServiceMock.Setup(x => x.IsEmployeeExistsOrNull(null)).ReturnsAsync(true);
+
+        var account = new Account { EmployeeID = null };
+
+        var result = await _validator.TestValidateAsync(account);
+
+        result.ShouldNotHaveValidationErrorFor(a => a.EmployeeID);
+    }
+
 
     [Fact]
     public async Task Should_Have_Error_When_CustomerID_Is_Not_Valid()
