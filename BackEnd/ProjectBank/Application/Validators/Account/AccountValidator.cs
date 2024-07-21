@@ -16,34 +16,14 @@ public class AccountValidator : AbstractValidator<Account>
             .WithMessage("Name cannot be empty.")
             .MaximumLength(20)
             .WithMessage($"Name is too long!")
-            .MustAsync(IsNameUnique)
+            .MustAsync(_validationService.IsNameUnique)
             .WithMessage("Name is used before (it must be unique)!");
 
         RuleFor(a => a.EmployeeID)
-            .MustAsync(IsEmployeeExistsOrNull).WithMessage("Employee with this id not exist!");
+            .MustAsync(_validationService.IsEmployeeExistsOrNull).WithMessage("Employee with this id not exist!");
 
         RuleFor(a => a.CustomerID)
-            .MustAsync(IsCustomerNotExists).WithMessage("Customer with this id not exist!")
-            .MustAsync(IsNotAlreadyRegisteredCustomer).WithMessage("Customer is already registered!");
-    }
-
-    private async Task<bool> IsCustomerNotExists(Guid customerID, CancellationToken cancellationToken)
-    {
-        return await _validationService.IsCustomerNotExists(customerID);
-    }
-
-    private async Task<bool> IsEmployeeExistsOrNull(Guid? employeeID, CancellationToken cancellationToken)
-    {
-        return await _validationService.IsEmployeeExistsOrNull(employeeID);
-    }
-
-    private async Task<bool> IsNotAlreadyRegisteredCustomer(Guid customerId, CancellationToken cancellationToken)
-    {
-        return await _validationService.IsNotAlreadyRegisteredCustomer(customerId);
-    }
-
-    private async Task<bool> IsNameUnique(string name, CancellationToken cancellationToken)
-    {
-        return await _validationService.IsNameUnique(name);
+            .MustAsync(_validationService.IsCustomerExists).WithMessage("Customer with this id not exist!")
+            .MustAsync(_validationService.IsNotAlreadyRegisteredCustomer).WithMessage("Customer is already registered!");
     }
 }

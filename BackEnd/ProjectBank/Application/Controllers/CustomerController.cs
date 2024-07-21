@@ -22,19 +22,19 @@ namespace ProjectBank.Controller.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Customer>>> GetAllCustomers()
+        public async Task<ActionResult<List<Customer>>> Get(string? search, string? sortItem, string? sortOrder)
         {
-            var customers = await customerService.GetAllCustomers();
+            var customers = await customerService.Get(search, sortItem, sortOrder);
 
             return Ok(customers);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Customer>> AddCustomer(CustomerRequestModel customer)
+        public async Task<ActionResult<Customer>> Post(CustomerRequestModel customer)
         {
             try
             {
-                var createdCustomer = await customerService.Add(customer);
+                var createdCustomer = await customerService.Post(customer);
                 return Ok(createdCustomer);
             }
             catch (ArgumentNullException ex)
@@ -49,7 +49,7 @@ namespace ProjectBank.Controller.Controllers
 
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteCustomer(Guid id) //work
+        public async Task<IActionResult> Delete(Guid id) //work
         {
             if (id == Guid.Empty)
             {
@@ -61,7 +61,7 @@ namespace ProjectBank.Controller.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateCustomer(Guid id, CustomerRequestModel customer) //Work
+        public async Task<IActionResult> Update(Guid id, CustomerRequestModel customer) //Work
         {
             if (id == Guid.Empty)
             {

@@ -5,7 +5,7 @@ namespace ProjectBank.Application.Services.Mappers
 {
     public class CustomerMapper
     {
-        public Customer MapRequestToCustomer(CustomerRequestModel requestModel)
+        public Customer GetCustomer(CustomerRequestModel requestModel)
         {
             var customer = new Customer();
             customer.Id = Guid.NewGuid();
@@ -19,7 +19,7 @@ namespace ProjectBank.Application.Services.Mappers
         }
 
 
-        public CustomerRequestModel MapRequestToDB(Customer customer)
+        public CustomerRequestModel GetRequestModel(Customer customer)
         {
             var requestModel = new CustomerRequestModel();
             requestModel.Name = customer.Name;
@@ -31,7 +31,7 @@ namespace ProjectBank.Application.Services.Mappers
             return requestModel;
         }
 
-        public Customer MapRequestToSet(Customer res, CustomerRequestModel customer)
+        public Customer PutRequestModelInCustomer(Customer res, CustomerRequestModel customer)
         {
             res.Name = customer.Name;
             res.LastName = customer.LastName;
@@ -40,6 +40,10 @@ namespace ProjectBank.Application.Services.Mappers
             res.Email = customer.Email;
 
             return res;
+        }
+        public List<CustomerRequestModel> GetRequestModels(List<Customer> customers)
+        {
+            return customers.Select(customer => GetRequestModel(customer)).ToList();
         }
     }
 }

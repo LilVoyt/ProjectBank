@@ -26,7 +26,7 @@ namespace ProjectBank.Application.Services.Mappers
             };
         }
 
-        public Account PutAccountRequestModelInAccount(Account account, AccountRequestModel requestModel)
+        public Account PutRequestModelInAccount(Account account, AccountRequestModel requestModel)
         {
             account.Name = requestModel.Name;
             account.EmployeeID = requestModel.EmployeeID;

@@ -5,6 +5,7 @@ using ProjectBank.Application.Controllers.Exceptions;
 using ProjectBank.Application.Services.Interfaces;
 using ProjectBank.Application.Services.Mappers;
 using ProjectBank.Application.Validators.Account;
+using ProjectBank.Application.Validators.Customer;
 using ProjectBank.Controller.Services;
 using ProjectBank.Data;
 using ProjectBank.Entities;
@@ -29,11 +30,16 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IMoneyTransferService, MoneyTransferService>();
 
 builder.Services.AddScoped<IAccountValidationService, AccountValidationService>();
+builder.Services.AddScoped<ICustomerValidationService, CustomerValidationService>();
 
 builder.Services.AddScoped<AbstractValidator<Account>, AccountValidator>();
 builder.Services.AddScoped<IValidator<Account>, AccountValidator>();
 
+builder.Services.AddScoped<AbstractValidator<Customer>, CustomerValidator>();
+builder.Services.AddScoped<IValidator<Customer>, CustomerValidator>();
+
 builder.Services.AddScoped<AccountMapper>();
+builder.Services.AddScoped<CustomerMapper>();
 
 
 

@@ -76,7 +76,7 @@ namespace ProjectBank.Controller.Services
                 throw new KeyNotFoundException($"Account with ID {id} not found.");
             }
 
-            account = _accountMapper.PutAccountRequestModelInAccount(account, requestModel);
+            account = _accountMapper.PutRequestModelInAccount(account, requestModel);
             var validationResult = await _validator.ValidateAsync(account);
             if (!validationResult.IsValid)
             {
