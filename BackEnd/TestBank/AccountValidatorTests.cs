@@ -8,11 +8,13 @@ public class AccountValidatorTests
 {
     private readonly Mock<IAccountValidationService> _validationServiceMock;
     private readonly AccountValidator _validator;
+    CancellationToken _cancellationToken;
 
     public AccountValidatorTests()
     {
         _validationServiceMock = new Mock<IAccountValidationService>();
         _validator = new AccountValidator(_validationServiceMock.Object);
+        _cancellationToken = CancellationToken.None;
     }
 
     [Fact]
@@ -28,7 +30,7 @@ public class AccountValidatorTests
     [Fact]
     public async Task Should_Have_Error_When_Name_Is_Not_Unique()
     {
-        _validationServiceMock.Setup(x => x.IsNameUnique(It.IsAny<string>())).ReturnsAsync(false);
+        _validationServiceMock.Setup(x => x.IsNameUnique(It.IsAny<string>(), _cancellationToken)).ReturnsAsync(false);
 
         var account = new Account { Name = "Test Name" };
 
@@ -40,7 +42,7 @@ public class AccountValidatorTests
     [Fact]
     public async Task Should_Have_Error_When_EmployeeID_Is_Not_Valid()
     {
-        _validationServiceMock.Setup(x => x.IsEmployeeExistsOrNull(It.IsAny<Guid>())).ReturnsAsync(false);
+        _validationServiceMock.Setup(x => x.IsEmployeeExistsOrNull(It.IsAny<Guid>(), _cancellationToken)).ReturnsAsync(false);
 
         var account = new Account { EmployeeID = Guid.NewGuid() };
 
@@ -52,7 +54,7 @@ public class AccountValidatorTests
     [Fact]
     public async Task Should_Not_Have_Error_When_EmployeeID_Is_Null()
     {
-        _validationServiceMock.Setup(x => x.IsEmployeeExistsOrNull(null)).ReturnsAsync(true);
+        _validationServiceMock.Setup(x => x.IsEmployeeExistsOrNull(null, _cancellationToken)).ReturnsAsync(true);
 
         var account = new Account { EmployeeID = null };
 
@@ -65,7 +67,7 @@ public class AccountValidatorTests
     [Fact]
     public async Task Should_Have_Error_When_CustomerID_Is_Not_Valid()
     {
-        _validationServiceMock.Setup(x => x.IsCustomerNotExists(It.IsAny<Guid>())).ReturnsAsync(false);
+        _validationServiceMock.Setup(x => x.IsCustomerExists(It.IsAny<Guid>(), _cancellationToken)).ReturnsAsync(false);
 
         var account = new Account { CustomerID = Guid.NewGuid() };
 
@@ -77,7 +79,7 @@ public class AccountValidatorTests
     [Fact]
     public async Task Should_Have_Error_When_Customer_Is_Already_Registered()
     {
-        _validationServiceMock.Setup(x => x.IsNotAlreadyRegisteredCustomer(It.IsAny<Guid>())).ReturnsAsync(false);
+        _validationServiceMock.Setup(x => x.IsNotAlreadyRegisteredCustomer(It.IsAny<Guid>(), _cancellationToken)).ReturnsAsync(false);
 
         var account = new Account { CustomerID = Guid.NewGuid() };
 
