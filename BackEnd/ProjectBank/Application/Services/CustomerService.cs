@@ -75,32 +75,38 @@ namespace ProjectBank.Controller.Services
             return res;
         }
 
-        public async Task<Guid> Update(Guid id, CustomerRequestModel requestModel)
+        public async Task<Customer> Update(Guid id, CustomerRequestModel requestModel)
         {
             var account = await _context.Customer.FindAsync(id);
             if (account == null)
             {
-                return Guid.Empty;
+                throw new KeyNotFoundException($"Account with ID {id} not found.");
             }
             account = _customerMapper.PutRequestModelInCustomer(account, requestModel);
+            var validationResult = await _validator.ValidateAsync(account);
+            if (!validationResult.IsValid)
+            {
+                var errorMessages = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+                throw new ValidationException(errorMessages);
+            }
             _context.Customer.Update(account);
             await _context.SaveChangesAsync();
 
-            return id;
+            return account;
         }
 
-        public async Task<Guid> Delete(Guid id)
+        public async Task<Customer> Delete(Guid id)
         {
             var account = await _context.Customer.FindAsync(id);
             if (account == null)
             {
-                return Guid.Empty;
+                throw new KeyNotFoundException($"Account with ID {id} not found.");
             }
 
             _context.Customer.Remove(account);
             await _context.SaveChangesAsync();
 
-            return id;
+            return account;
         }
     }
 }

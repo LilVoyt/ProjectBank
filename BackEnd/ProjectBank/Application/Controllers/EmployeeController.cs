@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ProjectBank.Controller.Services;
+using ProjectBank.Application.Services.Interfaces;
 using ProjectBank.Data;
 using ProjectBank.Entities;
 using ProjectBank.Models;
@@ -10,80 +10,39 @@ namespace ProjectBank.Controller.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {
-        private readonly DataContext _context;
-        private readonly IEmployeeService employeeService;
+        private readonly IEmployeeService _employeeService;
 
         public EmployeeController(DataContext context, IEmployeeService employeeService)
         {
-            _context = context;
-            this.employeeService = employeeService;
+            _employeeService = employeeService;
         }
 
-        [HttpGet("GetAllEmployees")]
-        public async Task<ActionResult<List<Employee>>> GetAllEmployees() //work
+        [HttpGet]
+        public async Task<ActionResult<List<EmployeeRequestModel>>> Get(string? search, string? sortItem, string? sortOrder) //work
         {
-            var employee = await employeeService.GetAllEmployee();
-
+            var employee = await _employeeService.Get(search, sortItem, sortOrder);
             return Ok(employee);
         }
 
-
-        [HttpGet("GetEmployees/{id}")]
-        public async Task<ActionResult<EmployeeRequestModel>> GetEmployee(Guid id) //work
+        [HttpPost]
+        public async Task<ActionResult<Employee>> Post(EmployeeRequestModel employee)
         {
-
-            if (id == Guid.Empty)
-            {
-                return NotFound();
-            }
-            var employee = await employeeService.GetEmployee(id);
-
-            return Ok(employee);
+            var createdEmployee = await _employeeService.Post(employee);
+            return Ok(createdEmployee);
         }
 
-
-        [HttpPost("AddEmployee")]
-        public async Task<ActionResult<Employee>> AddEmployee(EmployeeRequestModel employee)
+        [HttpPut]
+        public async Task<IActionResult> Update(Guid id, EmployeeRequestModel employee) //Work
         {
-            try
-            {
-                var createdEmployee = await employeeService.AddEmployee(employee);
-                return Ok(createdEmployee);
-            }
-            catch (ArgumentNullException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-
-        [HttpDelete("DeleteEmployee/{id}")]
-        public async Task<IActionResult> DeleteEmployee(Guid id) //work
-        {
-            if (id == Guid.Empty)
-            {
-                return BadRequest();
-            }
-            await employeeService.DeleteEmployee(id);
-
-            return NoContent();
-        }
-
-
-        [HttpPut("UpdateEmployee/{id}")]
-        public async Task<IActionResult> UpdateEmployee(Guid id, EmployeeRequestModel employee) //Work
-        {
-            if (id == Guid.Empty)
-            {
-                return BadRequest();
-            }
-            await employeeService.UpdateEmployee(id, employee);
+            await _employeeService.Update(id, employee);
             return Ok(id);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(Guid id) //work
+        {
+            await _employeeService.Delete(id);
+            return NoContent();
         }
     }
 }
-        

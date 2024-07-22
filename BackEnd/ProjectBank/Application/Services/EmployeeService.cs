@@ -1,133 +1,108 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Castle.Core.Resource;
+using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ProjectBank.Application.Services.Interfaces;
+using ProjectBank.Application.Services.Mappers;
 using ProjectBank.Data;
 using ProjectBank.Entities;
 using ProjectBank.Models;
+using System.Linq.Expressions;
 
 namespace ProjectBank.Controller.Services
 {
-    public interface IEmployeeService
-    {
-        Task<ActionResult<List<Employee>>> GetAllEmployee();
-        Task<EmployeeRequestModel> GetEmployee(Guid id);
-        Task<Employee> AddEmployee(EmployeeRequestModel customer);
-        Task<Guid> UpdateEmployee(Guid id, EmployeeRequestModel requestModel);
-        Task<Guid> DeleteEmployee(Guid id);
-    }
-
     public class EmployeeService : IEmployeeService
     {
         private readonly DataContext _context;
+        private readonly EmployeeMapper _employeeMapper;
+        private readonly IValidator<Employee> _validator;
 
-        public EmployeeService(DataContext context)
+        public EmployeeService(DataContext context, IValidator<Employee> validator, EmployeeMapper employeeMapper)
         {
             _context = context;
+            _employeeMapper = employeeMapper;
+            _validator = validator;
         }
 
 
-        public async Task<ActionResult<List<Employee>>> GetAllEmployee()
+        public async Task<ActionResult<List<EmployeeRequestModel>>> Get(string? search, string? sortItem, string? sortOrder)
         {
-            var employee = await _context.Employee.ToListAsync();
+            IQueryable<Employee> employees = _context.Employee;
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                employees = employees.Where(n => n.Name.ToLower().Contains(search.ToLower()));
+            }
+
+            Expression<Func<Employee, object>> selectorKey = sortItem?.ToLower() switch
+            {
+                "name" => employees => employees.Name,
+                "lastname" => employees => employees.LastName,
+                "country" => employees => employees.Country,
+                "phone" => employees => employees.Phone,
+                "email" => employees => employees.Email,
+                _ => employees => employees.Name
+            };
+
+            employees = sortOrder?.ToLower() == "desc"
+                ? employees.OrderByDescending(selectorKey)
+                : employees.OrderBy(selectorKey);
+
+            List<Employee> employeesList = await employees.ToListAsync();
+
+            List<EmployeeRequestModel> response = _employeeMapper.GetRequestModels(employeesList);
+
+            return response;
+        }
+
+        public async Task<Employee> Post(EmployeeRequestModel employee)
+        {
+            var res = _employeeMapper.GetEmployee(employee);
+
+            var validationResult = await _validator.ValidateAsync(res);
+            if (!validationResult.IsValid)
+            {
+                var errorMessages = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+                throw new ValidationException(errorMessages);
+            }
+
+            await _context.Employee.AddAsync(res);
+            await _context.SaveChangesAsync();
+            return res;
+        }
+
+        public async Task<Employee> Update(Guid id, EmployeeRequestModel requestModel)
+        {
+            var employee = await _context.Employee.FindAsync(id);
+            if (employee == null)
+            {
+                throw new KeyNotFoundException($"Account with ID {id} not found.");
+            }
+            employee = _employeeMapper.PutRequestModelInEmployee(employee, requestModel);
+            var validationResult = await _validator.ValidateAsync(employee);
+            if (!validationResult.IsValid)
+            {
+                var errorMessages = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+                throw new ValidationException(errorMessages);
+            }
+            _context.Employee.Update(employee);
+            await _context.SaveChangesAsync();
 
             return employee;
         }
 
-
-        public async Task<EmployeeRequestModel> GetEmployee(Guid id)
-        {
-            var employee = await _context.Employee.FindAsync(id);
-
-            if (employee == null)
-            {
-                return null;
-            }
-            var res = MapRequestToDB(employee);
-
-            return res;
-        }
-
-
-        public async Task<Employee> AddEmployee(EmployeeRequestModel employee)
-        {
-            if (employee == null)
-            {
-                throw new ArgumentNullException(nameof(employee));
-            }
-            var res = MapRequestToEmployee(employee);
-
-            _context.Employee.AddAsync(res);
-            await _context.SaveChangesAsync();
-
-            return res;
-        }
-
-
-        public async Task<Guid> DeleteEmployee(Guid id)
+        public async Task<Employee> Delete(Guid id)
         {
             var employee = await _context.Employee.FindAsync(id);
             if (employee == null)
             {
-                return Guid.Empty;
+                throw new KeyNotFoundException($"Account with ID {id} not found.");
             }
 
             _context.Employee.Remove(employee);
             await _context.SaveChangesAsync();
 
-            return id;
-        }
-
-
-        public async Task<Guid> UpdateEmployee(Guid id, EmployeeRequestModel requestModel)//need changes
-        {
-            var employee = await _context.Employee.FindAsync(id);
-            if (employee == null)
-            {
-                return Guid.Empty;
-            }
-            employee = MapRequestToSet(employee, requestModel);
-            _context.Employee.Update(employee);
-            await _context.SaveChangesAsync();
-
-            return id;
-        }
-
-
-        private Employee MapRequestToEmployee(EmployeeRequestModel requestModel)
-        {
-            var employee = new Employee();
-            employee.Id = Guid.NewGuid();
-            employee.Name = requestModel.Name;
-            employee.LastName = requestModel.LastName;
-            employee.Country = requestModel.Country;
-            employee.Phone = requestModel.Phone;
-            employee.Email = requestModel.Email;
-
             return employee;
-        }
-
-
-        private EmployeeRequestModel MapRequestToDB(Employee employee)
-        {
-            var requestModel = new EmployeeRequestModel();
-            requestModel.Name = employee.Name;
-            requestModel.LastName = employee.LastName;
-            requestModel.Country = employee.Country;
-            requestModel.Phone = employee.Phone;
-            requestModel.Email = employee.Email;
-
-            return requestModel;
-        }
-
-
-        private Employee MapRequestToSet(Employee res, EmployeeRequestModel employee)
-        {
-            res.Name = employee.Name;
-            res.LastName = employee.LastName;
-            res.Country = employee.Country;
-            res.Phone = employee.Phone;
-            res.Email = employee.Email;
-
-            return res;
         }
     }
 }

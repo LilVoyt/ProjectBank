@@ -83,7 +83,6 @@ namespace ProjectBank.Controller.Services
                 var errorMessages = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
                 throw new ValidationException(errorMessages);
             }
-
             _context.Account.Update(account);
             await _context.SaveChangesAsync();
             return account;

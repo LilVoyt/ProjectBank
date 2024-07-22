@@ -12,12 +12,10 @@ namespace ProjectBank.Controller.Controllers
     [ApiController]
     public class CustomerController : ControllerBase
     {
-        private readonly DataContext _context;
         private readonly ICustomerService customerService;
 
-        public CustomerController(DataContext context, ICustomerService customerService)
+        public CustomerController(ICustomerService customerService)
         {
-            _context = context;
             this.customerService = customerService;
         }
 
@@ -32,44 +30,22 @@ namespace ProjectBank.Controller.Controllers
         [HttpPost]
         public async Task<ActionResult<Customer>> Post(CustomerRequestModel customer)
         {
-            try
-            {
-                var createdCustomer = await customerService.Post(customer);
-                return Ok(createdCustomer);
-            }
-            catch (ArgumentNullException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-
-        [HttpDelete]
-        public async Task<IActionResult> Delete(Guid id) //work
-        {
-            if (id == Guid.Empty)
-            {
-                return BadRequest();
-            }
-            await customerService.Delete(id);   
-            
-            return NoContent();
+            var createdCustomer = await customerService.Post(customer);
+            return Ok(createdCustomer);
         }
 
         [HttpPut]
         public async Task<IActionResult> Update(Guid id, CustomerRequestModel customer) //Work
         {
-            if (id == Guid.Empty)
-            {
-                return BadRequest();
-            }
             await customerService.Update(id, customer);
             return Ok(id);
         }
 
+        [HttpDelete]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await customerService.Delete(id);
+            return NoContent();
+        }
     }
 }

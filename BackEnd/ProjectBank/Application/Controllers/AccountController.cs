@@ -27,21 +27,21 @@ namespace ProjectBank.Controller.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Account>> AddAccount(AccountRequestModel account)
+        public async Task<ActionResult<Account>> Post(AccountRequestModel account)
         {
             var createdAccount = await _accountService.Post(account);
-            return CreatedAtAction(nameof(AddAccount), new { id = createdAccount.Id }, createdAccount);
+            return CreatedAtAction(nameof(Post), new { id = createdAccount.Id }, createdAccount);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAccount(Guid id, AccountRequestModel account)
+        public async Task<IActionResult> Update(Guid id, AccountRequestModel account)
         {
             var result = await _accountService.Update(id, account);
             return Ok(result);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAccount(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             await _accountService.Delete(id);
             return NoContent();

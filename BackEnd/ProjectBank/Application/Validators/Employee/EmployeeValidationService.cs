@@ -2,26 +2,25 @@
 using ProjectBank.Data;
 using System.Text.RegularExpressions;
 
-namespace ProjectBank.Application.Validators.Customer
+namespace ProjectBank.Application.Validators.Employee
 {
-
-    public class CustomerValidationService : ICustomerValidationService
+    public class EmployeeValidationService : IEmployeeValidationService
     {
         private readonly DataContext _context;
 
-        public CustomerValidationService(DataContext context)
+        public EmployeeValidationService(DataContext context)
         {
             _context = context;
         }
 
         public async Task<bool> Is_Email_Not_In_DB(string email, CancellationToken cancellationToken)
         {
-            return !await _context.Customer.AnyAsync(c => c.Email == email);
+            return !await _context.Employee.AnyAsync(c => c.Email == email);
         }
 
         public async Task<bool> Is_PhoneNumber_Not_In_DB(string number, CancellationToken cancellationToken)
         {
-            return await _context.Customer.AnyAsync(c => c.Phone == number);
+            return await _context.Employee.AnyAsync(c => c.Phone == number);
         }
 
         public Task<bool> Is_PhoneNumber_Valid(string phoneNumber, CancellationToken cancellationToken)
@@ -30,6 +29,5 @@ namespace ProjectBank.Application.Validators.Customer
             bool isValid = Regex.IsMatch(phoneNumber, phonePattern);
             return Task.FromResult(isValid);
         }
-
     }
 }
