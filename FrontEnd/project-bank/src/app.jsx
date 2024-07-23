@@ -1,4 +1,3 @@
-// src/App.jsx
 import { useEffect, useState } from 'preact/hooks';
 import { Routes, Route, Link } from 'react-router-dom';
 import './app.css';
@@ -19,19 +18,7 @@ export function App() {
 
   return (
     <section className='MainWindow'>
-      <nav className='top-menu'>
-        <div className='left-menu'>
-        <h1>Project Bank</h1>
-        <ul>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/customers">Customers</Link></li>
-        </ul>
-        </div>
-        <div className='right-menu'>
-        <button>login</button>
-        </div>
-      </nav>
-      <div className='RegAndList'>
+      <div id='RegAndList'>
         <Routes>
           <Route path="/" element={<RegistrationForm />} />
           <Route path="/customers" element={<CustomerList customers={customers} />} />

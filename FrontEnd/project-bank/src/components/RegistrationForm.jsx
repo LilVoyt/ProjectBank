@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './RegistrationForm.css';
+import Header from './Header.jsx';
 
 const RegistrationForm = ({ onRegister }) => {
   const [formData, setFormData] = useState({
@@ -33,7 +34,10 @@ const RegistrationForm = ({ onRegister }) => {
   };
 
   return (
+    <>
+    <Header></Header>
     <form className='registration-form' onSubmit={handleSubmit}>
+
       <h2>Register</h2>
       <div>
         <input
@@ -97,6 +101,7 @@ const RegistrationForm = ({ onRegister }) => {
       </div>
       <button type="submit">Register</button>
     </form>
+    </>
   );
 };
 

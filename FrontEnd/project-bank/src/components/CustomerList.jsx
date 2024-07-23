@@ -1,7 +1,10 @@
 import './CustomerList.css';
+import Header from './Header.jsx';
 
 const CustomerList = ({ customers }) => {
   return (
+    <>
+    <Header></Header>
     <div className='customer-list'>
       <h2>Registered Users</h2>
       <ul>
@@ -17,6 +20,7 @@ const CustomerList = ({ customers }) => {
         ))}
       </ul>
     </div>
+    </>
   );
 };
 

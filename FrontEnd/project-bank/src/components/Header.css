@@ -1,0 +1,63 @@
+.top-menu {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    margin: 0px 20px 0px 20px;
+  }
+  
+  .left-menu{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .left-menu h1{
+    color: #000000;
+    font-size: 34px;
+    margin: 0;
+    padding: 0px 40px 0px 10px;
+  }
+  
+  .left-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+  }
+  
+  .left-menu a {
+    text-decoration: none;
+    color: #000000; /* Колір тексту посилання */
+    font-size: 18px;
+    transition: color 0.3s;
+  }
+  
+  .right-menu button{
+    height: 40px;
+    width: 80px;
+    color: #000000;
+    border: none;
+    border-radius: 15px;
+  
+  }
+  
+  .top-menu ul li {
+    display: inline;
+  }
+  
+  .top-menu ul li a:hover {
+    text-decoration: underline;
+  }
+  
+  .login-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .RegAndList {
+    margin-top: 20px;
+  }
