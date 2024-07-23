@@ -9,6 +9,7 @@ using ProjectBank.Application.Validators.Account;
 using ProjectBank.Application.Validators.Card;
 using ProjectBank.Application.Validators.Customer;
 using ProjectBank.Application.Validators.Employee;
+using ProjectBank.Application.Validators.Transaction;
 using ProjectBank.Controller.Services;
 using ProjectBank.Data;
 using ProjectBank.Entities;
@@ -38,6 +39,7 @@ builder.Services.AddScoped<IAccountValidationService, AccountValidationService>(
 builder.Services.AddScoped<ICustomerValidationService, CustomerValidationService>();
 builder.Services.AddScoped<IEmployeeValidationService, EmployeeValidationService>();
 builder.Services.AddScoped<ICardValidationService, CardValidationService>();
+builder.Services.AddScoped<ITransactionValidationService, TransactionValidationService>();
 
 builder.Services.AddScoped<AbstractValidator<Account>, AccountValidator>();
 builder.Services.AddScoped<IValidator<Account>, AccountValidator>();
@@ -51,10 +53,14 @@ builder.Services.AddScoped<IValidator<Employee>, EmployeeValidator>();
 builder.Services.AddScoped<AbstractValidator<Card>, CardValidator>();
 builder.Services.AddScoped<IValidator<Card>, CardValidator>();
 
+builder.Services.AddScoped<AbstractValidator<Transaction>, TransactionValidator>();
+builder.Services.AddScoped<IValidator<Transaction>, TransactionValidator>();
+
 builder.Services.AddScoped<AccountMapper>();
 builder.Services.AddScoped<CustomerMapper>();
 builder.Services.AddScoped<EmployeeMapper>();
 builder.Services.AddScoped<CardMapper>();
+builder.Services.AddScoped<TransactionMapper>();
 
 
 

@@ -10,19 +10,17 @@ namespace ProjectBank.Controller.Controllers
     [ApiController]
     public class CardController : ControllerBase
     {
-        private readonly DataContext _context;
-        private readonly ICardService cardService;
+        private readonly ICardService _cardService;
 
-        public CardController(DataContext context, ICardService cardService)
+        public CardController(ICardService cardService)
         {
-            _context = context;
-            this.cardService = cardService;
+            _cardService = cardService;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Card>>> Get(string? search, string? sortItem, string? sortOrder)
         {
-            var card = await cardService.Get(search, sortItem, sortOrder);
+            var card = await _cardService.Get(search, sortItem, sortOrder);
 
             return Ok(card);
         }
@@ -32,7 +30,7 @@ namespace ProjectBank.Controller.Controllers
         public async Task<ActionResult<Card>> Post(CardRequestModel card)
         {
 
-            var createdCard = await cardService.Post(card);
+            var createdCard = await _cardService.Post(card);
             return Ok(createdCard);
         }
 
@@ -40,7 +38,7 @@ namespace ProjectBank.Controller.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(Guid id, CardRequestModel card)
         {
-            await cardService.Update(id, card);
+            await _cardService.Update(id, card);
             return Ok(id);
         }
 
@@ -48,7 +46,7 @@ namespace ProjectBank.Controller.Controllers
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await cardService.Delete(id);
+            await _cardService.Delete(id);
             return NoContent();
         }
     }

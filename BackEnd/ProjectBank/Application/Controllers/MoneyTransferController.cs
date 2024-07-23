@@ -5,29 +5,27 @@ using ProjectBank.Entities;
 
 namespace ProjectBank.Controller.Controllers
 {
-    [Route("api/MakeTransactions")]
+    [Route("api/makeTransactions")]
     [ApiController]
     public class MoneyTransferController : ControllerBase
     {
-        private readonly DataContext _context;
-        private readonly IMoneyTransferService methodsService;
+        private readonly IMoneyTransferService _moneyTransferService;
 
-        public MoneyTransferController(DataContext context, IMoneyTransferService methodsSevice)
+        public MoneyTransferController(IMoneyTransferService methodsSevice)
         {
-            _context = context;
-            methodsService = methodsSevice;
+            _moneyTransferService = methodsSevice;
         }
-        [HttpGet("MakeTransaction/cardID={cardID}/sum={sum}")]
+        [HttpGet]
         public async Task<ActionResult<Account>> MakeTransaction(Guid cardID, double sum)
         {
-            await methodsService.MakeTransaction(cardID, sum);
+            await _moneyTransferService.MakeTransaction(cardID, sum);
             return Ok();
         }
 
-        [HttpPut("makeTransaction/senderCardID={senderCardID}/receiverCardID={receiverCardID}/sum={sum}")]
+        [HttpPut]
         public async Task<ActionResult<Account>> MakeTransaction(Guid senderCardID, Guid receiverCardID, double sum)
         {
-            await methodsService.MakeTransaction(senderCardID, receiverCardID, sum);
+            await _moneyTransferService.MakeTransaction(senderCardID, receiverCardID, sum);
             return Ok();
         }
     }

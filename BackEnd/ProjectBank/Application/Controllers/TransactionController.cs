@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ProjectBank.Controller.Services;
+using ProjectBank.Application.Services.Interfaces;
 using ProjectBank.Data;
 using ProjectBank.Entities;
 using ProjectBank.Models;
@@ -11,75 +11,42 @@ namespace ProjectBank.Controller.Controllers
     [ApiController]
     public class TransactionController : ControllerBase
     {
-        private readonly DataContext _context;
         private readonly ITransactionService transactionService;
 
-        public TransactionController(DataContext context, ITransactionService transactionService)
+        public TransactionController(ITransactionService transactionService)
         {
-            _context = context;
             this.transactionService = transactionService;
         }
 
-        [HttpGet("GetAllTransaction")]
-        public async Task<ActionResult<List<Entities.Transaction>>> GetAllTransaction() //work
+        [HttpGet]
+        public async Task<ActionResult<List<Entities.Transaction>>> Get(Guid? search, string? sortItem, string? sortOrder)
         {
-            var transaction = await transactionService.GetAllTransaction();
+            var transaction = await transactionService.Get(search, sortItem, sortOrder);
 
             return Ok(transaction);
         }
 
-        [HttpGet("GetTransaction/{id}")]
-        public async Task<ActionResult<TransactionRequestModel>> GetTransaction(Guid id) //work
+        [HttpPost]
+        public async Task<ActionResult<Entities.Transaction>> Post(TransactionRequestModel transaction)
         {
 
-            if (id == Guid.Empty)
-            {
-                return NotFound();
-            }
-            var transaction = await transactionService.GetTransactions(id);
-
-            return Ok(transaction);
+            var createdTransaction = await transactionService.Post(transaction);
+            return Ok(createdTransaction);
         }
 
-        [HttpPost("AddTransaction")]
-        public async Task<ActionResult<Entities.Transaction>> AddTransaction(TransactionRequestModel transaction)
+        [HttpPut]
+        public async Task<IActionResult> Update(Guid id, TransactionRequestModel transaction)
         {
-            try
-            {
-                var createdTransaction = await transactionService.AddTransactions(transaction);
-                return Ok(createdTransaction);
-            }
-            catch (ArgumentNullException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            await transactionService.Update(id, transaction);
+            return Ok(id);
         }
 
-        [HttpDelete("DeleteTransaction/{id}")]
-        public async Task<IActionResult> DeleteTransaction(Guid id) //work
+        [HttpDelete]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            if (id == Guid.Empty)
-            {
-                return BadRequest();
-            }
-            await transactionService.DeleteTransactions(id);
+            await transactionService.Delete(id);
 
             return NoContent();
-        }
-
-        [HttpPut("UpdateTransaction/{id}")]
-        public async Task<IActionResult> UpdateTransactions(Guid id, TransactionRequestModel transaction) //Work
-        {
-            if (id == Guid.Empty)
-            {
-                return BadRequest();
-            }
-            await transactionService.UpdateTransactions(id, transaction);
-            return Ok(id);
         }
     }
 }
