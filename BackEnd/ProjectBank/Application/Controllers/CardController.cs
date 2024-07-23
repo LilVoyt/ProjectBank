@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ProjectBank.Controller.Services;
+using ProjectBank.Application.Services.Interfaces;
 using ProjectBank.Data;
 using ProjectBank.Entities;
 using ProjectBank.Models;
@@ -19,65 +19,36 @@ namespace ProjectBank.Controller.Controllers
             this.cardService = cardService;
         }
 
-        [HttpGet("GetAllCards")]
-        public async Task<ActionResult<List<Card>>> GetAllCards() //work
+        [HttpGet]
+        public async Task<ActionResult<List<Card>>> Get(string? search, string? sortItem, string? sortOrder)
         {
-            var card = await cardService.GetAllCard();
+            var card = await cardService.Get(search, sortItem, sortOrder);
 
             return Ok(card);
         }
 
-        [HttpGet("GetCard/{id}")]
-        public async Task<ActionResult<Card>> GetCard(Guid id) //work
+
+        [HttpPost]
+        public async Task<ActionResult<Card>> Post(CardRequestModel card)
         {
-            var card = await _context.Card.FindAsync(id);
-            if (card == null)
-            {
-                return NotFound();
-            }
-            return Ok(card);
+
+            var createdCard = await cardService.Post(card);
+            return Ok(createdCard);
         }
 
 
-        [HttpPost("AddCard")]
-        public async Task<ActionResult<Card>> AddCard(CardRequestModel card) //тут
+        [HttpPut]
+        public async Task<IActionResult> Update(Guid id, CardRequestModel card)
         {
-            try
-            {
-                var createdCard = await cardService.AddCard(card);
-                return Ok(createdCard);
-            }
-            catch (ArgumentNullException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-
-        [HttpPut("UpdateCard/{id}")]
-        public async Task<IActionResult> UpdateCard(Guid id, CardRequestModel card) //Work
-        {
-            if (id == Guid.Empty)
-            {
-                return BadRequest();
-            }
-            await cardService.UpdateCard(id, card);
+            await cardService.Update(id, card);
             return Ok(id);
         }
 
 
-        [HttpDelete("DeleteCard/{id}")]
-        public async Task<IActionResult> DeleteCard(Guid id) //work
+        [HttpDelete]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            if (id == Guid.Empty)
-            {
-                return BadRequest();
-            }
-            await cardService.DeleteCard(id);
+            await cardService.Delete(id);
             return NoContent();
         }
     }

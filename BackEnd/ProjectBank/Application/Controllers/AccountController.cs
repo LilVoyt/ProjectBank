@@ -33,14 +33,14 @@ namespace ProjectBank.Controller.Controllers
             return CreatedAtAction(nameof(Post), new { id = createdAccount.Id }, createdAccount);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         public async Task<IActionResult> Update(Guid id, AccountRequestModel account)
         {
             var result = await _accountService.Update(id, account);
             return Ok(result);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _accountService.Delete(id);

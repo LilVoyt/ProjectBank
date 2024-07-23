@@ -1,47 +1,97 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ProjectBank.Application.Services.FunctionalityService;
+using ProjectBank.Application.Services.Interfaces;
+using ProjectBank.Application.Services.Mappers;
 using ProjectBank.Data;
 using ProjectBank.Entities;
 using ProjectBank.Models;
+using System.Linq.Expressions;
 
 namespace ProjectBank.Controller.Services
 {
-    public interface ICardService
-    {
-        Task<ActionResult<List<Card>>> GetAllCard();
-        Task<CardRequestModel> GetCard(Guid id);
-        Task<Card> AddCard(CardRequestModel card);
-        Task<Guid> UpdateCard(Guid id, CardRequestModel requestModel);
-        Task<Guid> DeleteCard(Guid id);
-    }
     public class CardServise : ICardService
     {
         private readonly DataContext _context;
+        private readonly CardMapper _cardMapper;
+        private readonly IValidator<Card> _validator;
 
-        public CardServise(DataContext context)
+        public CardServise(DataContext context, CardMapper cardMapper, IValidator<Card> validator)
         {
             _context = context;
+            _cardMapper = cardMapper;
+            _validator = validator;
         }
-        async Task<Card> ICardService.AddCard(CardRequestModel card)
+        public async Task<ActionResult<List<CardRequestModel>>> Get(string? search, string? sortItem, string? sortOrder)
         {
-            if (card == null)
-            {
-                throw new ArgumentNullException(nameof(card));
-            }
-            var res = MapRequestToCard(card);
+            IQueryable<Card> cards = _context.Card;
 
-            _context.Card.AddAsync(res);
+            if (!string.IsNullOrEmpty(search))
+            {
+                cards = cards.Where(c => c.CardName.ToLower().Contains(search.ToLower()));
+            }
+
+            Expression<Func<Card, object>> selectorKey = sortItem?.ToLower() switch
+            {
+                "name" => card => card.CardName,
+                _ => card => card.NumberCard,
+            };
+
+            cards = sortOrder?.ToLower() == "desc"
+                ? cards.OrderByDescending(selectorKey)
+                : cards.OrderBy(selectorKey);
+
+            List<Card> accountList = await cards.ToListAsync();
+
+            List<CardRequestModel> response = _cardMapper.GetRequestModels(accountList);
+
+            return response;
+        }
+
+        public async Task<Card> Post(CardRequestModel card)
+        {
+            var res = _cardMapper.GetCard(card);
+
+            var validationResult = await _validator.ValidateAsync(res);
+            if (!validationResult.IsValid)
+            {
+                var errorMessages = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+                throw new ValidationException(errorMessages);
+            }
+
+            await _context.Card.AddAsync(res);
             await _context.SaveChangesAsync();
 
             return res;
         }
 
-        async Task<Guid> ICardService.DeleteCard(Guid id)
+        public async Task<Card>Update(Guid id, CardRequestModel requestModel)
         {
             var card = await _context.Card.FindAsync(id);
             if (card == null)
             {
-                return Guid.Empty;
+                throw new KeyNotFoundException($"Account with ID {id} not found.");
+            }
+
+            card = _cardMapper.PutRequestModelInCard(card, requestModel);
+            var validationResult = await _validator.ValidateAsync(card);
+            if (!validationResult.IsValid)
+            {
+                var errorMessages = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+                throw new ValidationException(errorMessages);
+            }
+            _context.Card.Update(card);
+            await _context.SaveChangesAsync();
+            return card;
+        }
+
+        public async Task<Card> Delete(Guid id)
+        {
+            var card = await _context.Card.FindAsync(id);
+            if (card == null)
+            {
+                throw new KeyNotFoundException($"Account with ID {id} not found.");
             }
 
             card.AccountID = Guid.Empty;
@@ -49,81 +99,7 @@ namespace ProjectBank.Controller.Services
             _context.Card.Remove(card);
             await _context.SaveChangesAsync();
 
-            return id;
-        }
-
-        async Task<ActionResult<List<Card>>> ICardService.GetAllCard()
-        {
-            var card = await _context.Card.ToListAsync();
-
             return card;
-        }
-
-        async Task<CardRequestModel> ICardService.GetCard(Guid id)
-        {
-            var card = await _context.Card.FindAsync(id);
-
-            if (card == null)
-            {
-                return null;
-            }
-            var res = MapRequestToDB(card);
-
-            return res;
-        }
-
-        async Task<Guid> ICardService.UpdateCard(Guid id, CardRequestModel requestModel)
-        {
-            var card = await _context.Card.FindAsync(id);
-            if (card == null)
-            {
-                return Guid.Empty;
-            }
-            card = MapRequestToSet(card, requestModel);
-            _context.Card.Update(card);
-            await _context.SaveChangesAsync();
-
-            return id;
-        }
-
-        private Card MapRequestToCard(CardRequestModel requestModel)
-        {
-            var card = new Card();
-            card.Id = Guid.NewGuid();
-            card.NumberCard = requestModel.NumberCard;
-            card.CardName = requestModel.CardName;
-            card.Pincode = requestModel.Pincode;
-            card.Data = requestModel.Data;
-            card.CVV = requestModel.CVV;
-            card.Balance = requestModel.Balance;
-            card.AccountID = requestModel.AccountID;
-
-            return card;
-        }
-
-        private CardRequestModel MapRequestToDB(Card card)
-        {
-            var requestModel = new CardRequestModel();
-            requestModel.NumberCard = card.NumberCard;
-            requestModel.CardName = card.CardName;
-            requestModel.Pincode = card.Pincode;
-            requestModel.Data = card.Data;
-            requestModel.CVV = card.CVV;
-            requestModel.Balance = card.Balance;
-
-            return requestModel;
-        }
-
-        private Card MapRequestToSet(Card res, CardRequestModel card)
-        {
-            res.NumberCard = card.NumberCard;
-            res.CardName = card.CardName;
-            res.Pincode = card.Pincode;
-            res.Data = card.Data;
-            res.CVV = card.CVV;
-            res.Balance = card.Balance;
-
-            return res;
         }
     }
 }
