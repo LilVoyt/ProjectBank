@@ -11,13 +11,13 @@ using System.Linq.Expressions;
 
 namespace ProjectBank.Controller.Services
 {
-    public class CardServise : ICardService
+    public class CardService : ICardService
     {
         private readonly DataContext _context;
         private readonly CardMapper _cardMapper;
         private readonly IValidator<Card> _validator;
 
-        public CardServise(DataContext context, CardMapper cardMapper, IValidator<Card> validator)
+        public CardService(DataContext context, CardMapper cardMapper, IValidator<Card> validator)
         {
             _context = context;
             _cardMapper = cardMapper;
