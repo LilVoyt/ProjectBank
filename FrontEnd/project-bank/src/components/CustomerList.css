@@ -1,25 +1,52 @@
-  .customer-list {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    width: 100%;
-    max-width: 400px;
-  }
-  
-  .customer-list h2 {
-    margin-bottom: 20px;
-  }
-  
-  .customer-list ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .customer-list li {
-    margin-bottom: 10px;
-    padding: 10px;
-    background-color: #737373;
-    border-radius: 4px;
-  }
-  
+.customer-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 800px; /* Збільшив ширину для кращого вигляду */
+  margin: 20px auto; /* Відцентрував список на сторінці */
+  background-color: #f9f9f9; /* Додав фон для контрасту */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Додав тінь для кращого вигляду */
+}
+
+.customer-list h2 {
+  margin-bottom: 20px;
+  font-size: 24px; /* Збільшив розмір шрифту */
+  color: #333; /* Темніший колір для заголовка */
+}
+
+.customer-list ul {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap; /* Додав flex-wrap для переведення елементів на новий рядок */
+  gap: 10px; /* Додав проміжок між елементами */
+}
+
+.customer-list li {
+  flex: 1 1 calc(50% - 10px); /* Зробив елементи шириною 50% мінус проміжок */
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #ffffff; /* Світлий фон для кожного елемента */
+  border: 1px solid #ddd; /* Додав рамку для кращої видимості */
+  border-radius: 4px;
+  transition: background-color 0.3s ease; /* Додав анімацію для hover ефекту */
+  box-sizing: border-box; /* Встановив box-sizing для коректного обчислення розмірів */
+  color: #333;
+}
+
+.customer-list li:hover {
+  background-color: #f1f1f1; /* Легкий ефект при наведенні мишки */
+}
+
+.customer-list li span {
+  display: block;
+  color: #555; /* Змінив колір тексту на більш контрастний */
+}
+
+.customer-list li span:first-child {
+  font-weight: bold; /* Виділив ім'я клієнта жирним шрифтом */
+}

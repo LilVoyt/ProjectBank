@@ -22,6 +22,7 @@ namespace ProjectBank.Application.Services.Mappers
         public CustomerRequestModel GetRequestModel(Customer customer)
         {
             var requestModel = new CustomerRequestModel();
+            requestModel.Id = customer.Id;
             requestModel.Name = customer.Name;
             requestModel.LastName = customer.LastName;
             requestModel.Country = customer.Country;

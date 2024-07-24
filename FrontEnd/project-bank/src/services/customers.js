@@ -10,3 +10,21 @@ export const fetchCustomers = async () => {
     console.error(e);
   }
 }
+
+export const createCustomers = async (customer) => {
+  console.log("Create....");
+  try {
+    const customerjson = {
+      "name": customer.firstName,
+      "lastName": customer.lastName,
+      "country": customer.country,
+      "phone": customer.phoneNumber,
+      "email": customer.email
+    }
+    const response = await axios.post("https://localhost:7018/api/customers", customerjson);
+    console.log(response.status);
+    return response.status;
+  } catch (e) {
+    console.error(e);
+  }
+}

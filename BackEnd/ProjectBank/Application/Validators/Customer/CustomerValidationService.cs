@@ -21,7 +21,7 @@ namespace ProjectBank.Application.Validators.Customer
 
         public async Task<bool> Is_PhoneNumber_Not_In_DB(string number, CancellationToken cancellationToken)
         {
-            return await _context.Customer.AnyAsync(c => c.Phone == number);
+            return !await _context.Customer.AnyAsync(c => c.Phone == number);
         }
 
         public Task<bool> Is_PhoneNumber_Valid(string phoneNumber, CancellationToken cancellationToken)
