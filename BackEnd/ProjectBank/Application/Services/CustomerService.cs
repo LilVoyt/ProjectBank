@@ -18,11 +18,11 @@ namespace ProjectBank.Controller.Services
 {
     public class CustomerService : ICustomerService
     {
-        private readonly DataContext _context;
+        private readonly IDataContext _context;
         private readonly IValidator<Customer> _validator;
-        private readonly CustomerMapper _customerMapper;
+        private readonly ICustomerMapper _customerMapper;
 
-        public CustomerService(DataContext context, IValidator<Customer> validator, CustomerMapper customerMapper)
+        public CustomerService(IDataContext context, IValidator<Customer> validator, ICustomerMapper customerMapper)
         {
             _context = context;
             _validator = validator;
@@ -77,22 +77,22 @@ namespace ProjectBank.Controller.Services
 
         public async Task<Customer> Update(Guid id, CustomerRequestModel requestModel)
         {
-            var account = await _context.Customer.FindAsync(id);
-            if (account == null)
+            var customer = await _context.Customer.FindAsync(id);
+            if (customer == null)
             {
                 throw new KeyNotFoundException($"Account with ID {id} not found.");
             }
-            account = _customerMapper.PutRequestModelInCustomer(account, requestModel);
-            var validationResult = await _validator.ValidateAsync(account);
+            customer = _customerMapper.PutRequestModelInCustomer(customer, requestModel);
+            var validationResult = await _validator.ValidateAsync(customer);
             if (!validationResult.IsValid)
             {
                 var errorMessages = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
                 throw new ValidationException(errorMessages);
             }
-            _context.Customer.Update(account);
+            _context.Customer.Update(customer);
             await _context.SaveChangesAsync();
 
-            return account;
+            return customer;
         }
 
         public async Task<Customer> Delete(Guid id)

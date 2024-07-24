@@ -3,7 +3,8 @@ using ProjectBank.Models;
 
 namespace ProjectBank.Application.Services.Mappers
 {
-    public class CustomerMapper
+
+    public class CustomerMapper : ICustomerMapper
     {
         public Customer GetCustomer(CustomerRequestModel requestModel)
         {

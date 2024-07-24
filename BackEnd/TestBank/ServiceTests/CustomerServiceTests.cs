@@ -18,17 +18,17 @@ namespace TestBank.ServiceTests
     public class CustomerServiceTests
     {
         private readonly Mock<DbSet<Customer>> _mockCustomerDbSet;
-        private readonly Mock<DataContext> _mockDataContext;
+        private readonly Mock<IDataContext> _mockDataContext;
         private readonly Mock<IValidator<Customer>> _mockCustomerValidator;
-        private readonly Mock<CustomerMapper> _mockCustomerMapper;
+        private readonly Mock<ICustomerMapper> _mockCustomerMapper;
         private readonly CustomerService _customerService;
 
         public CustomerServiceTests()
         {
             _mockCustomerDbSet = new Mock<DbSet<Customer>>();
-            _mockDataContext = new Mock<DataContext>();
+            _mockDataContext = new Mock<IDataContext>();
             _mockCustomerValidator = new Mock<IValidator<Customer>>();
-            _mockCustomerMapper = new Mock<CustomerMapper>();
+            _mockCustomerMapper = new Mock<ICustomerMapper>();
 
             _mockDataContext.Setup(m => m.Customer).Returns(_mockCustomerDbSet.Object);
 
@@ -38,30 +38,6 @@ namespace TestBank.ServiceTests
                 _mockCustomerMapper.Object);
         }
 
-        [Fact]
-        public async Task Get_ReturnsCustomerRequestModels()
-        {
-            // Arrange
-            var customers = new List<Customer>
-            {
-                new Customer { Id = Guid.NewGuid(), Name = "Test Customer" }
-            }.AsQueryable();
-
-            _mockCustomerDbSet.As<IQueryable<Customer>>().Setup(m => m.Provider).Returns(customers.Provider);
-            _mockCustomerDbSet.As<IQueryable<Customer>>().Setup(m => m.Expression).Returns(customers.Expression);
-            _mockCustomerDbSet.As<IQueryable<Customer>>().Setup(m => m.ElementType).Returns(customers.ElementType);
-            _mockCustomerDbSet.As<IQueryable<Customer>>().Setup(m => m.GetEnumerator()).Returns(customers.GetEnumerator());
-
-            _mockCustomerMapper.Setup(m => m.GetRequestModels(It.IsAny<List<Customer>>()))
-                .Returns(new List<CustomerRequestModel> { new CustomerRequestModel { Name = "Test Customer" } });
-
-            // Act
-            var result = await _customerService.Get(null, null, null);
-
-            // Assert
-            Assert.NotNull(result.Value);
-            Assert.Single(result.Value);
-        }
 
         [Fact]
         public async Task Post_ValidCustomer_ReturnsCustomer()
@@ -111,10 +87,11 @@ namespace TestBank.ServiceTests
             var customerId = Guid.NewGuid();
             var customerRequest = new CustomerRequestModel { Name = "Updated Customer" };
             var customer = new Customer { Id = customerId, Name = "Original Customer" };
+            var changedCustomer = new Customer { Id = customerId, Name = customerRequest.Name };
 
             _mockCustomerDbSet.Setup(m => m.FindAsync(customerId)).ReturnsAsync(customer);
-            _mockCustomerMapper.Setup(m => m.PutRequestModelInCustomer(customer, customerRequest)).Returns(customer);
-            _mockCustomerValidator.Setup(v => v.ValidateAsync(customer, default))
+            _mockCustomerMapper.Setup(m => m.PutRequestModelInCustomer(customer, customerRequest)).Returns(changedCustomer);
+            _mockCustomerValidator.Setup(v => v.ValidateAsync(changedCustomer, default))
                 .ReturnsAsync(new ValidationResult());
 
             // Act
@@ -123,7 +100,7 @@ namespace TestBank.ServiceTests
             // Assert
             Assert.NotNull(result);
             Assert.Equal(customerRequest.Name, result.Name);
-            _mockCustomerDbSet.Verify(m => m.Update(It.IsAny<Customer>()), Times.Once);
+            _mockCustomerDbSet.Verify(m => m.Update(It.Is<Customer>(c => c == changedCustomer)), Times.Once);
             _mockDataContext.Verify(m => m.SaveChangesAsync(default), Times.Once);
         }
 

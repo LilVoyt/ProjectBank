@@ -3,7 +3,7 @@ using ProjectBank.Entities;
 
 namespace ProjectBank.Data
 {
-    public class DataContext : DbContext
+    public class DataContext : DbContext, IDataContext
     {
         public DataContext(DbContextOptions <DataContext> options) : base(options) { }
 
@@ -65,6 +65,10 @@ namespace ProjectBank.Data
                       .HasForeignKey(e => e.CardReceiverID)
                       .OnDelete(DeleteBehavior.NoAction);
             });
+        }
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            return base.SaveChangesAsync(cancellationToken);
         }
     }
 }

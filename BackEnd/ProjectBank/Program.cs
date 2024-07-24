@@ -26,6 +26,10 @@ builder.Services.AddControllers()
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IDataContext, DataContext>();
+
+
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
@@ -57,7 +61,7 @@ builder.Services.AddScoped<AbstractValidator<Transaction>, TransactionValidator>
 builder.Services.AddScoped<IValidator<Transaction>, TransactionValidator>();
 
 builder.Services.AddScoped<AccountMapper>();
-builder.Services.AddScoped<CustomerMapper>();
+builder.Services.AddScoped<ICustomerMapper, CustomerMapper>();
 builder.Services.AddScoped<EmployeeMapper>();
 builder.Services.AddScoped<CardMapper>();
 builder.Services.AddScoped<TransactionMapper>();
