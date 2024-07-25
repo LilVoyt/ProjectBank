@@ -29,7 +29,11 @@ namespace ProjectBank.Controller.Services
             _customerMapper = customerMapper;
         }
 
-        public async Task<ActionResult<List<CustomerRequestModel>>> Get(string? search, string? sortItem, string? sortOrder)
+        public CustomerService()
+        {
+        }
+
+        public async Task<List<CustomerRequestModel>> Get(string? search, string? sortItem, string? sortOrder)
         {
             IQueryable<Customer> customers = _context.Customer;
 
